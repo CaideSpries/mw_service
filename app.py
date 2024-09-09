@@ -68,7 +68,15 @@ class Logger:
                     start_time = time.time()
                     frame_count = 0
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, 10.2024, (640, 480))
+
+                    # Dynamically get frame size and frame rate
+                    frame_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                    frame_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                    fps = self.cap.get(cv2.CAP_PROP_FPS)
+                    print(f"Frame size: {frame_width}x{frame_height}")
+
+                    #Start recording while dynamically setting up the video writer
+                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, fps, (frame_width, frame_height))
                     has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
                 elif not self.logging_active and has_setup_writer:

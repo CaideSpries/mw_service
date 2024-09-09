@@ -25,6 +25,10 @@ class Logger:
         self.frame_thread = threading.Thread(target=self.gen_frames)
         self.frame_thread.start()
 
+    def get_frame_rate(self):
+        # Get the frame rate from the video capture device
+        return self.cap.get(cv2.CAP_PROP_FPS)
+
     def start_logging(self, power_setting, catalyst, microwave_duration):
         self.log_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_sensor_log.csv"
         self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.avi"
@@ -47,7 +51,7 @@ class Logger:
                 writer = csv.writer(file)
 
                 for row in rows:
-                    if len(row) > 0 and row[0] == timestamp:  # Match the timestamp
+                    if row[0] == timestamp:  # Match the timestamp
                         if len(row) == 6:  # If comment column is missing, add it
                             row.append(comment)
                         else:
@@ -62,21 +66,15 @@ class Logger:
         print("Camera opened successfully.")
         has_setup_writer = False
         try:
+            frame_count = 0
+            start_time = 0
             while self.providing_frames:
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
                     start_time = time.time()
-                    frame_count = 0
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-
-                    # Dynamically get frame size and frame rate
-                    frame_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                    frame_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                    fps = self.cap.get(cv2.CAP_PROP_FPS)
-                    print(f"Frame size: {frame_width}x{frame_height}")
-
-                    #Start recording while dynamically setting up the video writer
-                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, fps, (frame_width, frame_height))
+                    frame_rate = self.get_frame_rate()
+                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
                     has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
                 elif not self.logging_active and has_setup_writer:

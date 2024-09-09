@@ -47,7 +47,7 @@ class Logger:
                 writer = csv.writer(file)
 
                 for row in rows:
-                    if row[0] == timestamp:  # Match the timestamp
+                    if len(row) > 0 and row[0] == timestamp:  # Match the timestamp
                         if len(row) == 6:  # If comment column is missing, add it
                             row.append(comment)
                         else:

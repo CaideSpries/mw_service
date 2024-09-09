@@ -40,7 +40,7 @@ spi.open(0, 0)  # Use SPI0.0 for MCP3008
 spi.max_speed_hz = 1000000
 
 # Number of thermistors to read
-no_of_thermistors = 4  # Adjust this value based on how many thermistors you want to log
+no_of_thermistors = 8  # Adjust this value based on how many thermistors you want to log
 
 # Function to read MCP3008 (single channel)
 def read_adc(adcnum):

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logging Dashboard</title>
+    <title>Microwave Reactor Tracking System</title>
     <style>
         .container {
             display: flex;
@@ -12,7 +12,7 @@
         .table-container {
             max-height: 400px;
             overflow-y: auto;
-            margin-right: 20px;
+            width: 60%;
         }
         table {
             width: 100%;
@@ -25,6 +25,9 @@
         th {
             background-color: #f2f2f2;
         }
+        .camera-container {
+            width: 35%;
+        }
         img {
             max-width: 100%;
             height: auto;
@@ -32,6 +35,7 @@
     </style>
 </head>
 <body>
+    <h1>Microwave Reactor Tracking System</h1>
     <form method="POST" action="/start">
         <label for="power">Power Setting:</label>
         <input type="text" id="power" name="power" required>
@@ -66,7 +70,7 @@
             </table>
         </div>
 
-        <div>
+        <div class="camera-container">
             <h2>Live Camera Feed</h2>
             <img src="{{ url_for('video_feed') }}" alt="Live Feed">
         </div>

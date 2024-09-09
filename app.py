@@ -73,10 +73,11 @@ class Logger:
                 if not has_setup_writer and self.logging_active:
                     start_time = time.time()
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    frame_rate = self.get_frame_rate()
-                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
+
+                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, 10, (640, 480))
                     has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
+
                 elif not self.logging_active and has_setup_writer:
                     end_time = time.time()
                     print(f"Captured {frame_count} frames in {end_time - start_time} seconds.")

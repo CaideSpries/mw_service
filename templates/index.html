@@ -3,53 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microwave Reactor Tracking System</title>
+    <title>Temperature Logger and Camera Feed</title>
     <style>
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            width: 60%;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
         }
+        table, th, td {
+            border: 1px solid black;
+        }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 4px;
+            text-align: left;
         }
         th {
+            font-weight: bold;
             background-color: #f2f2f2;
         }
-        .camera-container {
-            width: 35%;
+        .container {
+            display: flex;
+            justify-content: space-between;
         }
-        img {
-            max-width: 100%;
-            height: auto;
+        .container div {
+            width: 45%;
         }
     </style>
 </head>
 <body>
-    <h1>Microwave Reactor Tracking System</h1>
+    <h1>Temperature Logger and Live Camera Feed</h1>
+
+    <!-- Form to start and stop logging -->
     <form method="POST" action="/start">
-        <label for="power">Power Setting:</label>
-        <input type="text" id="power" name="power" required>
+       <label for="power">Power Setting:</label>
+       <input type="text" id="power" name="power" required>
 
-        <label for="catalyst">Catalyst:</label>
-        <input type="text" id="catalyst" name="catalyst" required>
+       <label for="catalyst">Catalyst:</label>
+       <input type="text" id="catalyst" name="catalyst" required>
 
-        <label for="microwave_duration_minutes">Microwave Duration (minutes):</label>
-        <input type="number" id="microwave_duration_minutes" name="microwave_duration_minutes" required>
+       <label for="microwave_duration_minutes">Microwave Duration (minutes):</label>
+       <input type="number" id="microwave_duration_minutes" name="microwave_duration_minutes" required>
 
-        <label for="microwave_duration_seconds">Microwave Duration (seconds):</label>
-        <input type="number" id="microwave_duration_seconds" name="microwave_duration_seconds" required>
+       <label for="microwave_duration_seconds">Microwave Duration (seconds):</label>
+       <input type="number" id="microwave_duration_seconds" name="microwave_duration_seconds" required>
 
-        <button type="submit">Start Logging</button>
+       <button type="submit">Start Logging</button>
     </form>
 
     <form method="POST" action="/stop">
@@ -57,7 +54,7 @@
     </form>
 
     <div class="container">
-        <div class="table-container">
+        <div>
             <h2>Recorded Data</h2>
             <h5>Comments can only be added while logging is active.</h5>
             <table>
@@ -70,9 +67,9 @@
             </table>
         </div>
 
-        <div class="camera-container">
+        <div>
             <h2>Live Camera Feed</h2>
-            <img src="{{ url_for('video_feed') }}" alt="Live Feed">
+            <img src="{{ url_for('video_feed') }}" alt="Live Feed" width="100%">
         </div>
     </div>
 
@@ -88,7 +85,7 @@
     let comments = {};
 
     function insertHeaders() {
-        const headers = ['Timestamp', 'Thermistor 1', 'Thermistor 2', 'Thermistor 3', 'Thermistor 4', 'Thermistor 5', 'Thermistor 6', 'Thermistor 7', 'Thermistor 8', 'Thermocouple', 'Comment'];
+        const headers = ['Timestamp', 'T-1', 'T-2', 'T-3', 'T-4', 'T-5', 'T-6', 'T-7', 'T-8','Thermocouple', 'Comment'];
         let tableHeaders = document.getElementById("table-headers");
 
         let tr = document.createElement("tr");
@@ -167,6 +164,7 @@
     }
 
     setInterval(fetchData, 1000);  // Fetch new data every second
-    </script>
+</script>
+
 </body>
 </html>

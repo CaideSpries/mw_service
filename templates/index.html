@@ -27,6 +27,9 @@
         .container div {
             width: 45%;
         }
+        .info-text {
+            font-size: 1.2em; /* Increase font size */
+        }
     </style>
 </head>
 <body>
@@ -56,7 +59,8 @@
     <div class="container">
         <div>
             <h2>Recorded Data</h2>
-            <h5>Comments can only be added while logging is active.</h5>
+            <h5 class="info-text">Comments can only be added while logging is active.</h5>
+            <h5 class="info-text">TR-1 to TR-8 represent the thermistors 1 to 8.</h5>
             <table>
                 <thead id="table-headers">
                     <!-- Table headers will be inserted here dynamically -->
@@ -85,7 +89,7 @@
     let comments = {};
 
     function insertHeaders() {
-        const headers = ['Timestamp', 'T-1', 'T-2', 'T-3', 'T-4', 'T-5', 'T-6', 'T-7', 'T-8','Thermocouple', 'Comment'];
+        const headers = ['Timestamp', 'TR-1', 'TR-2', 'TR-3', 'TR-4', 'TR-5', 'TR-6', 'TR-7', 'TR-8','Thermocouple', 'Comment'];
         let tableHeaders = document.getElementById("table-headers");
 
         let tr = document.createElement("tr");
@@ -163,7 +167,14 @@
             });
     }
 
+    function clearTable() {
+        document.getElementById("data-table-body").innerHTML = "";
+        headersInserted = false;
+    }
+
     setInterval(fetchData, 1000);  // Fetch new data every second
+
+    document.querySelector('form[action="/start"]').addEventListener('submit', clearTable);
 </script>
 
 </body>

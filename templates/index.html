@@ -89,6 +89,8 @@
     let comments = {};
 
     function insertHeaders() {
+        if (headersInserted) return;  // Prevent duplicate headers
+
         const headers = ['Timestamp', 'TR-1', 'TR-2', 'TR-3', 'TR-4', 'TR-5', 'TR-6', 'TR-7', 'TR-8','Thermocouple', 'Comment'];
         let tableHeaders = document.getElementById("table-headers");
 

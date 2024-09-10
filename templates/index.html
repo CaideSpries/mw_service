@@ -59,8 +59,7 @@
     <div class="container">
         <div>
             <h2>Recorded Data</h2>
-            <h5 class="info-text">Comments can only be added while logging is active.</h5>
-            <h5 class="info-text">TR-1 to TR-8 represent the thermistors 1 to 8.</h5>
+            <h5 class="info-text">Comments can only be added while logging is active. TR-1 to TR-8 represent the thermistors 1 to 8.</h5>
             <table>
                 <thead id="table-headers">
                     <!-- Table headers will be inserted here dynamically -->
@@ -89,95 +88,96 @@
     let comments = {};
 
     function insertHeaders() {
-        if (headersInserted) return;  // Prevent duplicate headers
+    if (headersInserted) return;  // Prevent duplicate headers
 
-        const headers = ['Timestamp', 'TR-1', 'TR-2', 'TR-3', 'TR-4', 'TR-5', 'TR-6', 'TR-7', 'TR-8','Thermocouple', 'Comment'];
-        let tableHeaders = document.getElementById("table-headers");
+    const headers = ['Timestamp', 'TR-1', 'TR-2', 'TR-3', 'TR-4', 'TR-5', 'TR-6', 'TR-7', 'TR-8', 'Thermocouple', 'Comment'];
+    let tableHeaders = document.getElementById("table-headers");
 
-        let tr = document.createElement("tr");
-        headers.forEach(header => {
-            let th = document.createElement("th");
-            th.innerText = header;
-            tr.appendChild(th);
-        });
-        tableHeaders.appendChild(tr);
-        headersInserted = true;
-    }
+    let tr = document.createElement("tr");
+    headers.forEach(header => {
+        let th = document.createElement("th");
+        th.innerText = header;
+        tr.appendChild(th);
+    });
+    tableHeaders.appendChild(tr);
+    headersInserted = true;
+}
 
     function updateOrCreateRow(rowData) {
-        const timestamp = rowData[0];
-        let existingRow = document.getElementById(`row-${timestamp}`);
+    const timestamp = rowData[0];
+    let existingRow = document.getElementById(`row-${timestamp}`);
 
-        if (!existingRow) {
-            existingRow = document.createElement("tr");
-            existingRow.id = `row-${timestamp}`;
+    if (!existingRow) {
+        existingRow = document.createElement("tr");
+        existingRow.id = `row-${timestamp}`;
 
-            rowData.forEach((cellData, index) => {
-                let td = document.createElement("td");
-                td.innerText = cellData;
-                existingRow.appendChild(td);
-            });
+        rowData.forEach((cellData, index) => {
+            let td = document.createElement("td");
+            td.innerText = cellData;
+            existingRow.appendChild(td);
+        });
 
-            // Add comment input field
-            let commentTd = document.createElement("td");
-            let commentInput = document.createElement("input");
-            commentInput.type = "text";
-            commentInput.name = "comment";
-            commentInput.value = comments[timestamp] || "";  // Load existing comment or leave blank
+        // Add comment input field
+        let commentTd = document.createElement("td");
+        let commentInput = document.createElement("input");
+        commentInput.type = "text";
+        commentInput.name = "comment";
+        commentInput.value = comments[timestamp] || "";  // Load existing comment or leave blank
 
-            commentInput.addEventListener("input", function () {
-                comments[timestamp] = commentInput.value;  // Save comment in the comments object
-                saveComment(timestamp, commentInput.value);
-            });
+        commentInput.addEventListener("input", function () {
+            comments[timestamp] = commentInput.value;  // Save comment in the comments object
+            saveComment(timestamp, commentInput.value);
+        });
 
-            commentTd.appendChild(commentInput);
-            existingRow.appendChild(commentTd);
+        commentTd.appendChild(commentInput);
+        existingRow.appendChild(commentTd);
 
-            document.getElementById("data-table-body").appendChild(existingRow);
-        } else {
-            // Update existing cells
-            rowData.forEach((cellData, index) => {
-                existingRow.cells[index].innerText = cellData;
-            });
-        }
-    }
-
-    function saveComment(timestamp, comment) {
-        fetch('/add_comment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                'timestamp': timestamp,
-                'comment': comment
-            })
+        document.getElementById("data-table-body").appendChild(existingRow);
+    } else {
+        // Update existing cells
+        rowData.forEach((cellData, index) => {
+            existingRow.cells[index].innerText = cellData;
         });
     }
+}
+
+    function saveComment(timestamp, comment) {
+    fetch('/add_comment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'timestamp': timestamp,
+            'comment': comment
+        })
+    });
+}
 
     function fetchData() {
-        fetch('/get_latest_data')
-            .then(response => response.json())
-            .then(data => {
-                if (!headersInserted && data.length > 0) {
-                    insertHeaders();
-                }
+    fetch('/get_latest_data')
+        .then(response => response.json())
+        .then(data => {
+            if (!headersInserted && data.length > 0) {
+                insertHeaders();
+            }
 
-                data.forEach(row => {
-                    updateOrCreateRow(row);
-                });
+            data.forEach(row => {
+                updateOrCreateRow(row);
             });
-    }
+        });
+}
 
     function clearTable() {
-        document.getElementById("data-table-body").innerHTML = "";
-        headersInserted = false;
-    }
+    document.getElementById("data-table-body").innerHTML = "";
+    document.getElementById("table-headers").innerHTML = "";  // Clear headers
+    headersInserted = false;
+}
 
     setInterval(fetchData, 1000);  // Fetch new data every second
 
     document.querySelector('form[action="/start"]').addEventListener('submit', clearTable);
-</script>
+    </script>
 
 </body>
 </html>

@@ -105,54 +105,58 @@
     }
 
     function updateOrCreateRow(rowData) {
-        const timestamp = rowData[0];
-        let existingRow = document.getElementById(`row-${timestamp}`);
+    const timestamp = rowData[0];
+    let existingRow = document.getElementById(`row-${timestamp}`);
 
-        if (!existingRow) {
-            existingRow = document.createElement("tr");
-            existingRow.id = `row-${timestamp}`;
+    if (!existingRow) {
+        existingRow = document.createElement("tr");
+        existingRow.id = `row-${timestamp}`;
 
-            rowData.forEach((cellData, index) => {
-                let td = document.createElement("td");
-                td.innerText = cellData;
-                existingRow.appendChild(td);
+        rowData.forEach((cellData, index) => {
+            let td = document.createElement("td");
+            td.innerText = cellData;
+            existingRow.appendChild(td);
+        });
+
+        // Remove the last column before adding the comment section (since rowData includes the comment already)
+        existingRow.removeChild(existingRow.lastChild);
+
+        // Add comment section (either input or plain text)
+        let commentTd = document.createElement("td");
+
+        if (loggingActive) {
+            // Show input field if logging is active
+            let commentInput = document.createElement("input");
+            commentInput.type = "text";
+            commentInput.name = "comment";
+            commentInput.value = comments[timestamp] || rowData[9] || "";  // Load existing or new comment
+
+            commentInput.addEventListener("input", function () {
+                comments[timestamp] = commentInput.value;  // Save comment in the comments object
+                saveComment(timestamp, commentInput.value);
             });
 
-            // Add comment section
-            let commentTd = document.createElement("td");
-
-            if (loggingActive) {
-                // Show input field if logging is active
-                let commentInput = document.createElement("input");
-                commentInput.type = "text";
-                commentInput.name = "comment";
-                commentInput.value = comments[timestamp] || "";  // Load existing comment or leave blank
-
-                commentInput.addEventListener("input", function () {
-                    comments[timestamp] = commentInput.value;  // Save comment in the comments object
-                    saveComment(timestamp, commentInput.value);
-                });
-
-                commentTd.appendChild(commentInput);
-            } else {
-                // Show saved comment text if logging is stopped
-                commentTd.innerText = comments[timestamp] || "";
-            }
-
-            existingRow.appendChild(commentTd);
-            document.getElementById("data-table-body").appendChild(existingRow);
+            commentTd.appendChild(commentInput);
         } else {
-            // Update existing cells
-            rowData.forEach((cellData, index) => {
-                existingRow.cells[index].innerText = cellData;
-            });
+            // Show the saved comment text if logging is stopped
+            commentTd.innerText = rowData[9] || "";  // Display existing comment
+        }
 
-            if (!loggingActive) {
-                // Update the comment section with saved comment after logging stops
-                existingRow.cells[10].innerText = comments[timestamp] || "";
-            }
+        existingRow.appendChild(commentTd);
+        document.getElementById("data-table-body").appendChild(existingRow);
+    } else {
+        // Update existing cells (TR-1 to TR-8)
+        rowData.slice(0, 9).forEach((cellData, index) => {
+            existingRow.cells[index].innerText = cellData;
+        });
+
+        if (!loggingActive) {
+            // Update the comment section with saved comment after logging stops
+            existingRow.cells[9].innerText = rowData[9] || "";
         }
     }
+}
+
 
     function saveComment(timestamp, comment) {
         fetch('/add_comment', {

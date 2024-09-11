@@ -52,10 +52,10 @@ class Logger:
 
                 for row in rows:
                     if row[0] == timestamp:  # Match the timestamp
-                        if len(row) == 6:  # If comment column is missing, add it
+                        if len(row) == 10:  # If comment column is missing, add it
                             row.append(comment)
                         else:
-                            row[6] = comment  # Update the existing comment
+                            row[10] = comment  # Update the existing comment
                     writer.writerow(row)
 
     def gen_frames(self):

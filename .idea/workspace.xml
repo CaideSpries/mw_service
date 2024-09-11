@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a frame rate check" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a buffering to save video at 30fps" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -257,7 +257,15 @@
       <option name="project" value="LOCAL" />
       <updated>1726071700402</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Added a buffering to save video at 30fps">
+      <option name="closed" value="true" />
+      <created>1726072622670</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1726072622670</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -322,6 +330,7 @@
     <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate." />
     <MESSAGE value="Reverting back to previous commit" />
     <MESSAGE value="Added a frame rate check" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a frame rate check" />
+    <MESSAGE value="Added a buffering to save video at 30fps" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a buffering to save video at 30fps" />
   </component>
 </project>

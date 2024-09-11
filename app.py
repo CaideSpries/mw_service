@@ -57,6 +57,7 @@ class Logger:
                         row[10] = comment  # Update the comment column
                     writer.writerow(row)
 
+
     def gen_frames(self):
         if not self.cap.isOpened():
             print("Failed to open camera.")
@@ -65,27 +66,22 @@ class Logger:
         print("Camera opened successfully.")
         has_setup_writer = False
         try:
+            desired_frame_rate = 30  # Desired frame rate in frames per second
+            frame_duration = 1.0 / desired_frame_rate  # Duration of each frame at 30fps
+            start_time = time.time()  # Record the time the logging started
+            last_frame_time = start_time  # Time when the last frame was captured
             frame_count = 0
-            start_time = 0
-            desired_frame_rate = 30  # Set the desired frame rate for the video output
-            frame_duration = 1.0 / desired_frame_rate  # Time duration for each frame at 30fps
 
             while self.providing_frames:
+                current_time = time.time()
+                elapsed_time = current_time - last_frame_time
+
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
-                    start_time = time.time()
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, desired_frame_rate, (640, 480))
                     has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
-
-                elif not self.logging_active and has_setup_writer:
-                    end_time = time.time()
-                    print(f"Captured {frame_count} frames in {end_time - start_time} seconds.")
-                    print(f"Frames per second: {frame_count / (end_time - start_time)}")
-                    print(f"Frame rate: {self.get_frame_rate()}")
-                    has_setup_writer = False
-                    self.video_writer = None
 
                 success, frame = self.cap.read()
                 if not success:
@@ -94,19 +90,24 @@ class Logger:
 
                 # Write frame to video if recording is active
                 if self.logging_active and self.video_writer is not None:
-                    frame_count += 1
                     self.video_writer.write(frame)
+                    frame_count += 1
 
                 # Send frame as JPEG to the client
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
                 self.frame_queue.put(frame)
 
-                # Adjust for 30fps output: introduce a delay to maintain 30fps if capturing too quickly
-                elapsed_time = time.time() - start_time
-                expected_frames = int(elapsed_time / frame_duration)
-                if frame_count < expected_frames:
-                    time.sleep(frame_duration)  # Sleep to match the target frame rate (30fps)
+                # Calculate how much time to wait to achieve 30fps
+                elapsed_time = time.time() - last_frame_time
+                if elapsed_time < frame_duration:
+                    time.sleep(frame_duration - elapsed_time)  # Ensure constant frame duration
+                last_frame_time = time.time()  # Update the last frame capture time
+
+            if has_setup_writer:
+                print(f"Captured {frame_count} frames.")
+                has_setup_writer = False
+
         except Exception as e:
             print(f"Error while reading camera stream: {e}")
         finally:

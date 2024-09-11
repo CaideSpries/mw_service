@@ -44,19 +44,22 @@ class Logger:
 
     def log_comment(self, timestamp, comment):
         self.comments[timestamp] = comment  # Save the comment in the dictionary
+
         if self.log_file_name:
             with open(self.log_file_name, mode='r+', newline='') as file:
                 reader = csv.reader(file)
-                rows = list(reader)
-                file.seek(0)
+                rows = list(reader)  # Read the existing data into memory
+                file.seek(0)  # Rewind to the start of the file
+                file.truncate()  # Clear the file for rewriting
                 writer = csv.writer(file)
 
                 for row in rows:
-                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and match the timestamp
-                        if len(row) < 11:  # Ensure the row has enough columns
+                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and matches the timestamp
+                        if len(row) < 11:  # Ensure the row has enough columns (e.g., for comment)
                             row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
                         row[10] = comment  # Update the comment column
-                    writer.writerow(row)
+                    if len(row) > 1:  # Only write rows with content (to avoid blank rows)
+                        writer.writerow(row)
 
     def calculate_frame_rate(self):
         # Calculate frame rate based on captured frame times

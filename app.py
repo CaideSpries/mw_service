@@ -67,14 +67,15 @@ class Logger:
         try:
             frame_count = 0
             start_time = 0
+            desired_frame_rate = 30  # Set the desired frame rate for the video output
+            frame_duration = 1.0 / desired_frame_rate  # Time duration for each frame at 30fps
+
             while self.providing_frames:
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
                     start_time = time.time()
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    frame_rate = self.get_frame_rate()
-
-                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
+                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, desired_frame_rate, (640, 480))
                     has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
 
@@ -82,7 +83,7 @@ class Logger:
                     end_time = time.time()
                     print(f"Captured {frame_count} frames in {end_time - start_time} seconds.")
                     print(f"Frames per second: {frame_count / (end_time - start_time)}")
-                    print(f"Frame rate: {frame_rate}")
+                    print(f"Frame rate: {self.get_frame_rate()}")
                     has_setup_writer = False
                     self.video_writer = None
 
@@ -100,6 +101,12 @@ class Logger:
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
                 self.frame_queue.put(frame)
+
+                # Adjust for 30fps output: introduce a delay to maintain 30fps if capturing too quickly
+                elapsed_time = time.time() - start_time
+                expected_frames = int(elapsed_time / frame_duration)
+                if frame_count < expected_frames:
+                    time.sleep(frame_duration)  # Sleep to match the target frame rate (30fps)
         except Exception as e:
             print(f"Error while reading camera stream: {e}")
         finally:

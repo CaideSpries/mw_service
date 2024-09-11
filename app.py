@@ -82,6 +82,7 @@ class Logger:
                     end_time = time.time()
                     print(f"Captured {frame_count} frames in {end_time - start_time} seconds.")
                     print(f"Frames per second: {frame_count / (end_time - start_time)}")
+                    print(f"Frame rate: {frame_rate}")
                     has_setup_writer = False
                     self.video_writer = None
 

@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate.">
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Reverting back to previous commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +244,15 @@
       <option name="project" value="LOCAL" />
       <updated>1726068194205</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Reverting back to previous commit">
+      <option name="closed" value="true" />
+      <created>1726070976575</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1726070976575</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -308,6 +315,7 @@
     <MESSAGE value="Added a check to see if the csv file row is empty" />
     <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging" />
     <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate." />
+    <MESSAGE value="Reverting back to previous commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reverting back to previous commit" />
   </component>
 </project>

@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added more columns for 8 thermistors">
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-    </list>
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixed the comment section" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -139,7 +137,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725910026104</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Fixed the comment section">
+      <option name="closed" value="true" />
+      <created>1726063423648</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1726063423648</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +202,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added dynamic retrieval of frame size and frame rate" />
     <MESSAGE value="Added more columns for 8 thermistors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added more columns for 8 thermistors" />
+    <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
+    <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
+    <MESSAGE value="Fixed the comment section" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the comment section" />
   </component>
 </project>

@@ -160,24 +160,16 @@ def get_latest_data():
         data = []
 
     if len(data) > 1:
-        data_without_headers = data[1:]  # Skip the header row
+        data_without_headers = data[1:]
     else:
         data_without_headers = []
 
     rounded_data = []
     for row in data_without_headers:
-        rounded_row = [row[0]]  # Keep the timestamp as is
-        # Process the middle columns (all except the last one) as numbers
-        for value in row[1:-1]:
-            try:
-                rounded_row.append(f"{float(value):.2f}")  # Convert and round numeric values
-            except ValueError:
-                rounded_row.append(value)  # If not numeric, keep the value as is
-        # Add the comment (last column) without modification
-        rounded_row.append(row[-1])
+        rounded_row = [row[0]] + [f"{float(x):.2f}" for x in row[1:-1]]
         rounded_data.append(rounded_row)
 
-    return jsonify(rounded_data[-10:])  # Return the last 10 rows
+    return jsonify(rounded_data[-10:])
 
 @app.route('/add_comment', methods=['POST'])
 def add_comment():

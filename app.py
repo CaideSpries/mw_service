@@ -70,13 +70,11 @@ class Logger:
             while self.providing_frames:
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
-                    start_time = time.time()
+                    frame_rate = self.get_frame_rate() or 30  # Default to 30 FPS if frame rate is unknown
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    frame_rate = self.get_frame_rate()
-
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
                     has_setup_writer = True
-                    print(f"Video writer set up with file name: {self.video_file_name}")
+                    print(f"Video writer set up with file name: {self.video_file_name} at {frame_rate} FPS")
 
                 elif not self.logging_active and has_setup_writer:
                     end_time = time.time()
@@ -165,11 +163,15 @@ def get_latest_data():
 
     rounded_data = []
     for row in data_without_headers:
-        if len(row) > 1:  # Ensure row has enough elements
+        if len(row) > 1:
+            # Include the comment if it exists (in the last column)
             rounded_row = [row[0]] + [f"{float(x):.2f}" if x.replace('.', '', 1).isdigit() else x for x in row[1:-1]]
+            comment = row[-1] if len(row) == 11 else ""  # Adjust based on row length
+            rounded_row.append(comment)  # Add the comment to the row
             rounded_data.append(rounded_row)
 
     return jsonify(rounded_data[-10:])
+
 
 @app.route('/add_comment', methods=['POST'])
 def add_comment():

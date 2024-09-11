@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixed the comment section" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a check to see if the csv file row is empty">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -201,7 +204,23 @@
       <option name="project" value="LOCAL" />
       <updated>1726064681113</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Fixed the comment section">
+      <option name="closed" value="true" />
+      <created>1726065100328</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1726065100328</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Added a check to see if the csv file row is empty">
+      <option name="closed" value="true" />
+      <created>1726065422565</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1726065422565</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -261,6 +280,7 @@
     <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
     <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
     <MESSAGE value="Fixed the comment section" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed the comment section" />
+    <MESSAGE value="Added a check to see if the csv file row is empty" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a check to see if the csv file row is empty" />
   </component>
 </project>

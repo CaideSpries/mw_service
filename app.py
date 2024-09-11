@@ -152,24 +152,34 @@ def video_feed():
 def get_latest_data():
     data = []
     try:
-        if logger.log_file_name is not None:
-            with open(logger.log_file_name, newline='') as csvfile:
+        if log_file_name:
+            with open(log_file_name, newline='') as csvfile:
                 reader = csv.reader(csvfile)
                 data = list(reader)
     except FileNotFoundError:
         data = []
 
+    # Skip the first row, which contains the headers
     if len(data) > 1:
-        data_without_headers = data[1:]
+        data_without_headers = data[1:]  # Skip the first row
     else:
         data_without_headers = []
 
+    # Round numeric values in the data to 2 decimal places, but keep comments as strings
     rounded_data = []
-    for row in data_without_headers:
-        rounded_row = [row[0]] + [f"{float(x):.2f}" for x in row[1:-1]]
+    for row in data_without_headers:  # Process data without headers
+        rounded_row = [row[0]]  # Keep the first element as is (likely a timestamp)
+        for item in row[1:-1]:  # Iterate over the middle elements
+            try:
+                # Try converting to float and round if successful
+                rounded_row.append(f"{float(item):.2f}")
+            except ValueError:
+                # If conversion fails, keep the original value (likely a comment)
+                rounded_row.append(item)
         rounded_data.append(rounded_row)
 
-    return jsonify(rounded_data[-10:])
+    return jsonify(rounded_data[-10:])  # Return the last 10 rows of data
+
 
 @app.route('/add_comment', methods=['POST'])
 def add_comment():

@@ -70,7 +70,7 @@ class Logger:
             while self.providing_frames:
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
-                    frame_rate = self.get_frame_rate() or 30  # Default to 30 FPS if frame rate is unknown
+                    frame_rate = self.get_frame_rate()
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
                     has_setup_writer = True
@@ -120,7 +120,8 @@ def index():
     except FileNotFoundError:
         data = []
 
-    return render_template('index.html', data=data)
+    # Pass the logging state to the template
+    return render_template('index.html', data=data, logging_active=logger.logging_active)
 
 
 @app.route('/start', methods=['POST'])

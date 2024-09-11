@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixed frame rate and ensured comments are displayed after stop logging">
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -236,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1726067515129</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate.">
+      <option name="closed" value="true" />
+      <created>1726068194205</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1726068194205</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -298,6 +307,7 @@
     <MESSAGE value="Fixed the comment section" />
     <MESSAGE value="Added a check to see if the csv file row is empty" />
     <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed frame rate and ensured comments are displayed after stop logging" />
+    <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed frame rate and ensured comments are displayed after stop logging, added start time and print frame rate." />
   </component>
 </project>

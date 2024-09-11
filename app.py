@@ -71,17 +71,17 @@ class Logger:
                 # Set up video writer if it hasn't been done yet
                 if not has_setup_writer and self.logging_active:
                     start_time = time.time()
-                    frame_rate = self.get_frame_rate()
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                    frame_rate = self.get_frame_rate()
+
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, frame_rate, (640, 480))
                     has_setup_writer = True
-                    print(f"Video writer set up with file name: {self.video_file_name} at {frame_rate} FPS")
+                    print(f"Video writer set up with file name: {self.video_file_name}")
 
                 elif not self.logging_active and has_setup_writer:
                     end_time = time.time()
                     print(f"Captured {frame_count} frames in {end_time - start_time} seconds.")
                     print(f"Frames per second: {frame_count / (end_time - start_time)}")
-                    print(f"Frames rate: {frame_rate}")
                     has_setup_writer = False
                     self.video_writer = None
 
@@ -122,8 +122,7 @@ def index():
     except FileNotFoundError:
         data = []
 
-    # Pass the logging state to the template
-    return render_template('index.html', data=data, logging_active=logger.logging_active)
+    return render_template('index.html', data=data)
 
 
 @app.route('/start', methods=['POST'])
@@ -166,16 +165,11 @@ def get_latest_data():
 
     rounded_data = []
     for row in data_without_headers:
-        if len(row) > 1:
-            # Include the comment if it exists (in the last column), otherwise empty string for comment
-            rounded_row = [row[0]] + [f"{float(x):.2f}" if x.replace('.', '', 1).isdigit() else x for x in row[1:9]]  # Only include TR-1 to TR-8
-            comment = row[9] if len(row) > 9 else ""  # Use the last column as the comment (10th column if present)
-            rounded_row.append(comment)  # Add the comment to the row
+        if len(row) > 1:  # Ensure row has enough elements
+            rounded_row = [row[0]] + [f"{float(x):.2f}" if x.replace('.', '', 1).isdigit() else x for x in row[1:-1]]
             rounded_data.append(rounded_row)
 
     return jsonify(rounded_data[-10:])
-
-
 
 @app.route('/add_comment', methods=['POST'])
 def add_comment():

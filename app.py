@@ -94,6 +94,7 @@ class Logger:
                     # Calculate frame rate based on the captured frames
                     dynamic_frame_rate = self.calculate_frame_rate()
                     print(f"Calculated frame rate: {dynamic_frame_rate}")
+                    print(f"Frame rate from get_frame_rate: {self.get_frame_rate()}")
 
                     # Video writer setup with the dynamically calculated frame rate
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -113,8 +114,6 @@ class Logger:
 
             if has_setup_writer:
                 print(f"Captured {frame_count} frames.")
-                print(f"Frame rate from get_frame_rate: {self.get_frame_rate()}")
-                print(f"Frame rate from calculate_frame_rate: {self.calculate_frame_rate()}")
 
         except Exception as e:
             print(f"Error while reading camera stream: {e}")

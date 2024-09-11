@@ -51,11 +51,10 @@ class Logger:
                 writer = csv.writer(file)
 
                 for row in rows:
-                    if row[0] == timestamp:  # Match the timestamp
-                        if len(row) == 10:  # If comment column is missing, add it
-                            row.append(comment)
-                        else:
-                            row[10] = comment  # Update the existing comment
+                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and match the timestamp
+                        if len(row) < 11:  # Ensure the row has enough columns
+                            row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
+                        row[10] = comment  # Update the comment column
                     writer.writerow(row)
 
     def gen_frames(self):

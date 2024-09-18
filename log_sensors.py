@@ -67,9 +67,13 @@ def voltage_to_temperature(voltage):
         return float('NaN')  # Return NaN if log fails (negative ohms)
 
     # Steinhart-Hart coefficients for 10k thermistor
-    a = 1.123760013e-3
-    b = 2.330409748e-4
-    c = 1.073440972e-7
+    # a = 1.123760013e-3 # From datasheet for 10k thermistor
+    # b = 2.330409748e-4 # From datasheet for 10k thermistor
+    # c = 1.073440972e-7 # From datasheet for 10k thermistor
+
+    a = -0.3080782548e-3 # From calibration for 10k thermistor
+    b = 4.895032621e-4 # From calibration for 10k thermistor
+    c = -10.75680830e-7 # From calibration for 10k thermistor
 
     t1 = b * lnohm
     t2 = c * lnohm**3

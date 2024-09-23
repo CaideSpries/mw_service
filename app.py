@@ -31,6 +31,13 @@ class Logger:
         # Get the frame rate from the video capture device
         return self.cap.get(cv2.CAP_PROP_FPS)
 
+    def cleanup_video_writer(self):
+        if self.video_writer is not None:
+            # Attempt to flush any remaining frames (if needed) before releasing
+            print("Flushing remaining frames and releasing video writer.")
+            self.video_writer.release()
+            self.video_writer = None
+
     def start_logging(self, power_setting, catalyst, microwave_duration):
         self.log_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_sensor_log.csv"
         self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.avi"
@@ -48,16 +55,12 @@ class Logger:
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
+        self.providing_frames = False  # Ensure `gen_frames` loop exits
 
-        # Ensure that `gen_frames` loop exits gracefully
-        self.providing_frames = False
+        # Call cleanup to properly close video writer
+        self.cleanup_video_writer()
 
-        # Properly release the video writer if it exists
-        if self.video_writer is not None:
-            self.video_writer.release()
-            self.video_writer = None
-
-        # Empty the frame queue to ensure no leftover frames are hanging around
+        # Clear any remaining frames in the queue
         with self.frame_queue.mutex:
             self.frame_queue.queue.clear()
 

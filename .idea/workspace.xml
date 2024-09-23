@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fix the Video Recording Handling" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Clearing the frame queue upon stopping logging and self.providing_frames is set to False in stop_logging to ensure gen_frames exits cleanly.">
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +119,7 @@
       <workItem from="1726644149485" duration="901000" />
       <workItem from="1726825685394" duration="1218000" />
       <workItem from="1727088321873" duration="227000" />
-      <workItem from="1727092002715" duration="1872000" />
+      <workItem from="1727092002715" duration="2126000" />
     </task>
     <task id="LOCAL-00001" summary="Added dynamic retrieval of frame size and frame rate">
       <option name="closed" value="true" />
@@ -343,7 +345,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727093590355</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Clearing the frame queue upon stopping logging and self.providing_frames is set to False in stop_logging to ensure gen_frames exits cleanly.">
+      <option name="closed" value="true" />
+      <created>1727094209682</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1727094209682</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -413,6 +423,7 @@
     <MESSAGE value="Fixed the adding of blank rows for comments" />
     <MESSAGE value="Updated the Steinhart-Hart coefficients with calibration results." />
     <MESSAGE value="Fix the Video Recording Handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix the Video Recording Handling" />
+    <MESSAGE value="Clearing the frame queue upon stopping logging and self.providing_frames is set to False in stop_logging to ensure gen_frames exits cleanly." />
+    <option name="LAST_COMMIT_MESSAGE" value="Clearing the frame queue upon stopping logging and self.providing_frames is set to False in stop_logging to ensure gen_frames exits cleanly." />
   </component>
 </project>

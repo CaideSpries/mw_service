@@ -38,9 +38,19 @@ class Logger:
         self.logging_active = True
         log_sensors.start_logging(self.log_file_name)
 
+        # Reset video writer
+        if self.video_writer is not None:
+            self.video_writer.release()
+            self.video_writer = None
+
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
+
+        # Ensure the video writer is properly closed
+        if self.video_writer is not None:
+            self.video_writer.release()
+            self.video_writer = None
 
     def log_comment(self, timestamp, comment):
         self.comments[timestamp] = comment  # Save the comment in the dictionary

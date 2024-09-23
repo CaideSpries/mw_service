@@ -17,26 +17,27 @@ class Logger:
         self.providing_frames = True
         self.has_setup_writer = False  # Track if the video writer has been set up
         self.video_writer = None
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(0)  # Initialize the VideoCapture here
         self.frame_thread = None
         self.frame_queue = queue.Queue()
         self.comments = {}
         self.frame_times = []  # List to store timestamps of captured frames
 
         # Start the frame generation in a separate thread
-        self.frame_thread = threading.Thread(target=self.gen_frames)
-        self.frame_thread.start()
+        self.start_frame_thread()
+
+    def start_frame_thread(self):
+        """ Start the frame thread if it's not already running. """
+        if self.frame_thread is None or not self.frame_thread.is_alive():
+            self.providing_frames = True
+            self.frame_thread = threading.Thread(target=self.gen_frames)
+            self.frame_thread.start()
 
     def get_frame_rate(self):
-        # Get the frame rate from the video capture device
         return self.cap.get(cv2.CAP_PROP_FPS)
-
-    import time
 
     def cleanup_video_writer(self):
         if self.video_writer is not None:
-            # Wait for a brief moment to allow any last frames to be written
-            time.sleep(0.5)
             print("Flushing remaining frames and releasing video writer.")
             self.video_writer.release()
             self.video_writer = None
@@ -51,15 +52,13 @@ class Logger:
         self.has_setup_writer = False  # Reset setup writer flag
         log_sensors.start_logging(self.log_file_name)
 
-        if self.video_writer is not None:
-            self.video_writer.release()
-            self.video_writer = None
+        # Reinitialize the video capture device
+        if self.cap is not None:
+            self.cap.release()
+        self.cap = cv2.VideoCapture(0)
 
-        # Restart frame capture thread if it isn't running
-        if self.frame_thread is None or not self.frame_thread.is_alive():
-            self.providing_frames = True
-            self.frame_thread = threading.Thread(target=self.gen_frames)
-            self.frame_thread.start()
+        # Restart frame capture thread
+        self.start_frame_thread()
 
     def stop_logging(self):
         log_sensors.stop_logging()
@@ -78,32 +77,12 @@ class Logger:
         with self.frame_queue.mutex:
             self.frame_queue.queue.clear()
 
-    def log_comment(self, timestamp, comment):
-        self.comments[timestamp] = comment  # Save the comment in the dictionary
-
-        if self.log_file_name:
-            with open(self.log_file_name, mode='r+', newline='') as file:
-                reader = csv.reader(file)
-                rows = list(reader)  # Read the existing data into memory
-                file.seek(0)  # Rewind to the start of the file
-                file.truncate()  # Clear the file for rewriting
-                writer = csv.writer(file)
-
-                for row in rows:
-                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and matches the timestamp
-                        if len(row) < 11:  # Ensure the row has enough columns (e.g., for comment)
-                            row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
-                        row[10] = comment  # Update the comment column
-                    if len(row) > 1:  # Only write rows with content (to avoid blank rows)
-                        writer.writerow(row)
-
     def calculate_frame_rate(self):
-        # Calculate frame rate based on captured frame times
         if len(self.frame_times) < 2:
-            return 30.0  # Default value if we don't have enough data
+            return 30.0
         total_time = self.frame_times[-1] - self.frame_times[0]
         average_frame_rate = len(self.frame_times) / total_time if total_time > 0 else 30.0
-        return min(average_frame_rate, 30.0)  # Cap the frame rate at 30fps for sanity
+        return min(average_frame_rate, 30.0)
 
     def gen_frames(self):
         if not self.cap.isOpened():
@@ -115,18 +94,17 @@ class Logger:
 
         try:
             while self.providing_frames:
-                current_time = time.time()
                 success, frame = self.cap.read()
-                if not success or not self.providing_frames:  # Exit gracefully if logging is stopped
+                if not success or not self.providing_frames:
                     print("Failed to capture frame or logging stopped.")
                     break
 
-                self.frame_times.append(current_time)  # Record the time of each captured frame
+                current_time = time.time()
+                self.frame_times.append(current_time)
 
-                if len(self.frame_times) > 30:  # Keep the last 30 frame times to calculate the rate
+                if len(self.frame_times) > 30:
                     self.frame_times.pop(0)
 
-                # Set up video writer if it hasn't been done yet and we're logging
                 if not self.has_setup_writer and self.logging_active:
                     dynamic_frame_rate = self.calculate_frame_rate()
                     print(f"Calculated frame rate: {dynamic_frame_rate}")
@@ -136,12 +114,10 @@ class Logger:
                     self.has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
 
-                # Write frame to video if recording is active
                 if self.logging_active and self.video_writer is not None:
                     self.video_writer.write(frame)
                     frame_count += 1
 
-                # Send frame as JPEG to the client
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
                 self.frame_queue.put(frame)
@@ -152,10 +128,10 @@ class Logger:
         except Exception as e:
             print(f"Error while reading camera stream: {e}")
         finally:
-            # Ensure video writer is released when exiting
-            self.cleanup_video_writer()
-            self.has_setup_writer = False  # Reset this flag when done
-            self.providing_frames = False  # Reset flag
+            if self.video_writer is not None:
+                self.video_writer.release()
+            self.has_setup_writer = False
+            self.providing_frames = False  # Ensure the flag is reset for future sessions
 
     def get_frame(self):
         while True:

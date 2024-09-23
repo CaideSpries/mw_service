@@ -43,6 +43,10 @@ class Logger:
             self.video_writer.release()
             self.video_writer = None
 
+        # Initialize video writer
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, self.calculate_frame_rate(), (640, 480))
+
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False

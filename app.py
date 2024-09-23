@@ -31,9 +31,12 @@ class Logger:
         # Get the frame rate from the video capture device
         return self.cap.get(cv2.CAP_PROP_FPS)
 
+    import time
+
     def cleanup_video_writer(self):
         if self.video_writer is not None:
-            # Attempt to flush any remaining frames (if needed) before releasing
+            # Wait for a brief moment to allow any last frames to be written
+            time.sleep(0.5)
             print("Flushing remaining frames and releasing video writer.")
             self.video_writer.release()
             self.video_writer = None
@@ -55,7 +58,12 @@ class Logger:
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
-        self.providing_frames = False  # Ensure `gen_frames` loop exits
+        self.providing_frames = False  # Signal gen_frames loop to exit
+
+        # Wait for frame thread to finish processing before cleaning up
+        if self.frame_thread is not None:
+            self.frame_thread.join()
+            self.frame_thread = None
 
         # Call cleanup to properly close video writer
         self.cleanup_video_writer()
@@ -115,7 +123,6 @@ class Logger:
 
                 # Set up video writer if it hasn't been done yet and we're logging
                 if not self.has_setup_writer and self.logging_active:
-                    # Calculate frame rate based on the captured frames
                     dynamic_frame_rate = self.calculate_frame_rate()
                     print(f"Calculated frame rate: {dynamic_frame_rate}")
 
@@ -142,6 +149,7 @@ class Logger:
         finally:
             if self.video_writer is not None:
                 self.video_writer.release()
+                self.video_writer = None  # Make sure to set it to None after releasing
             self.has_setup_writer = False  # Reset this flag when done
             self.providing_frames = True  # Reset the flag for future sessions
 

@@ -49,10 +49,17 @@ class Logger:
         log_sensors.stop_logging()
         self.logging_active = False
 
-        # Ensure the video writer is properly closed
+        # Ensure that `gen_frames` loop exits gracefully
+        self.providing_frames = False
+
+        # Properly release the video writer if it exists
         if self.video_writer is not None:
             self.video_writer.release()
             self.video_writer = None
+
+        # Empty the frame queue to ensure no leftover frames are hanging around
+        with self.frame_queue.mutex:
+            self.frame_queue.queue.clear()
 
     def log_comment(self, timestamp, comment):
         self.comments[timestamp] = comment  # Save the comment in the dictionary
@@ -94,8 +101,8 @@ class Logger:
             while self.providing_frames:
                 current_time = time.time()
                 success, frame = self.cap.read()
-                if not success:
-                    print("Failed to capture frame.")
+                if not success or not self.providing_frames:  # Exit gracefully if logging is stopped
+                    print("Failed to capture frame or logging stopped.")
                     break
 
                 self.frame_times.append(current_time)  # Record the time of each captured frame
@@ -105,12 +112,13 @@ class Logger:
 
                 # Set up video writer if it hasn't been done yet and we're logging
                 if not self.has_setup_writer and self.logging_active:
+                    # Calculate frame rate based on the captured frames
                     dynamic_frame_rate = self.calculate_frame_rate()
                     print(f"Calculated frame rate: {dynamic_frame_rate}")
 
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate, (640, 480))
-                    self.has_setup_writer = True  # Mark the writer as set up
+                    self.has_setup_writer = True
                     print(f"Video writer set up with file name: {self.video_file_name}")
 
                 # Write frame to video if recording is active
@@ -131,6 +139,8 @@ class Logger:
         finally:
             if self.video_writer is not None:
                 self.video_writer.release()
+            self.has_setup_writer = False  # Reset this flag when done
+            self.providing_frames = True  # Reset the flag for future sessions
 
     def get_frame(self):
         while True:

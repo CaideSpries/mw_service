@@ -55,18 +55,24 @@ class Logger:
             self.video_writer.release()
             self.video_writer = None
 
+        # Restart frame capture thread if it isn't running
+        if self.frame_thread is None or not self.frame_thread.is_alive():
+            self.providing_frames = True
+            self.frame_thread = threading.Thread(target=self.gen_frames)
+            self.frame_thread.start()
+
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
-        self.providing_frames = False  # Signal gen_frames loop to exit
-
-        # Wait for frame thread to finish processing before cleaning up
-        if self.frame_thread is not None:
-            self.frame_thread.join()
-            self.frame_thread = None
+        self.providing_frames = False  # Ensure `gen_frames` loop exits
 
         # Call cleanup to properly close video writer
         self.cleanup_video_writer()
+
+        # Wait for the frame thread to finish processing
+        if self.frame_thread is not None:
+            self.frame_thread.join()
+            self.frame_thread = None
 
         # Clear any remaining frames in the queue
         with self.frame_queue.mutex:
@@ -106,7 +112,6 @@ class Logger:
 
         print("Camera opened successfully.")
         frame_count = 0
-        start_time = time.time()
 
         try:
             while self.providing_frames:
@@ -147,11 +152,10 @@ class Logger:
         except Exception as e:
             print(f"Error while reading camera stream: {e}")
         finally:
-            if self.video_writer is not None:
-                self.video_writer.release()
-                self.video_writer = None  # Make sure to set it to None after releasing
+            # Ensure video writer is released when exiting
+            self.cleanup_video_writer()
             self.has_setup_writer = False  # Reset this flag when done
-            self.providing_frames = True  # Reset the flag for future sessions
+            self.providing_frames = False  # Reset flag
 
     def get_frame(self):
         while True:

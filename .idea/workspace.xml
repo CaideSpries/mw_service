@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a videowriter cleanup to close video writer at stop logging">
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added timer to cleanup_video_writer, and joining the frame_thread in stop_logging">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,7 +120,7 @@
       <workItem from="1726644149485" duration="901000" />
       <workItem from="1726825685394" duration="1218000" />
       <workItem from="1727088321873" duration="227000" />
-      <workItem from="1727092002715" duration="2358000" />
+      <workItem from="1727092002715" duration="2865000" />
     </task>
     <task id="LOCAL-00001" summary="Added dynamic retrieval of frame size and frame rate">
       <option name="closed" value="true" />
@@ -361,7 +362,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727094461212</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Added timer to cleanup_video_writer, and joining the frame_thread in stop_logging">
+      <option name="closed" value="true" />
+      <created>1727094806584</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1727094806584</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -433,6 +442,7 @@
     <MESSAGE value="Fix the Video Recording Handling" />
     <MESSAGE value="Clearing the frame queue upon stopping logging and self.providing_frames is set to False in stop_logging to ensure gen_frames exits cleanly." />
     <MESSAGE value="Added a videowriter cleanup to close video writer at stop logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a videowriter cleanup to close video writer at stop logging" />
+    <MESSAGE value="Added timer to cleanup_video_writer, and joining the frame_thread in stop_logging" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added timer to cleanup_video_writer, and joining the frame_thread in stop_logging" />
   </component>
 </project>

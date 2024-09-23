@@ -14,77 +14,64 @@ class Logger:
         self.log_file_name = None
         self.video_file_name = None
         self.logging_active = False
-        self.providing_frames = True
-        self.has_setup_writer = False  # Track if the video writer has been set up
+        self.providing_frames = False  # Ensures `gen_frames` loop knows when to stop
         self.video_writer = None
-        self.cap = None  # Initialize as None, set up later
+        self.cap = None  # Initialize later
         self.frame_thread = None
         self.frame_queue = queue.Queue()
         self.comments = {}
-        self.frame_times = []  # List to store timestamps of captured frames
-
-        # Start the frame generation in a separate thread
-        self.start_frame_thread()
-
-    def start_frame_thread(self):
-        """Start the frame thread if it's not already running."""
-        if self.frame_thread is None or not self.frame_thread.is_alive():
-            self.providing_frames = True
-            self.frame_thread = threading.Thread(target=self.gen_frames)
-            self.frame_thread.start()
-
-    def get_frame_rate(self):
-        return self.cap.get(cv2.CAP_PROP_FPS) if self.cap else 30.0
-
-    def cleanup_video_writer(self):
-        if self.video_writer is not None:
-            print("Flushing remaining frames and releasing video writer.")
-            self.video_writer.release()
-            self.video_writer = None
+        self.frame_times = []
 
     def start_logging(self, power_setting, catalyst, microwave_duration):
         self.log_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_sensor_log.csv"
         self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.avi"
         self.comments.clear()
 
-        # Ensure the video writer is reset for the new session
         self.logging_active = True
-        self.has_setup_writer = False  # Reset setup writer flag
         log_sensors.start_logging(self.log_file_name)
 
-        # Reinitialize the video capture device
+        # Set up the video capture device
         if self.cap is not None:
             self.cap.release()
-            time.sleep(1)  # Short delay to ensure the resource is properly released
+            time.sleep(1)  # Ensure it releases properly
+
         self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
-            print("Failed to open camera after starting logging.")
+            print("Failed to open camera.")
             return
 
-        # Restart frame capture thread
-        self.start_frame_thread()
+        # Start frame thread if not already running
+        if self.frame_thread is None or not self.frame_thread.is_alive():
+            self.providing_frames = True
+            self.frame_thread = threading.Thread(target=self.gen_frames)
+            self.frame_thread.start()
+        print(f"Logging started with file name: {self.video_file_name}")
 
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
-        self.providing_frames = False  # Ensure `gen_frames` loop exits
+        self.providing_frames = False  # Stop the `gen_frames` loop
 
-        # Call cleanup to properly close video writer
-        self.cleanup_video_writer()
+        # Release video writer
+        if self.video_writer is not None:
+            self.video_writer.release()
+            self.video_writer = None
 
-        # Release the capture device properly
+        # Release the video capture device
         if self.cap is not None:
             self.cap.release()
             self.cap = None
 
-        # Wait for the frame thread to finish processing
+        # Wait for frame thread to finish
         if self.frame_thread is not None:
             self.frame_thread.join()
             self.frame_thread = None
 
-        # Clear any remaining frames in the queue
+        # Clear remaining frames in the queue
         with self.frame_queue.mutex:
             self.frame_queue.queue.clear()
+
+        print("Logging stopped and resources cleaned up.")
 
     def calculate_frame_rate(self):
         if len(self.frame_times) < 2:
@@ -95,33 +82,29 @@ class Logger:
 
     def gen_frames(self):
         if self.cap is None or not self.cap.isOpened():
-            print("Camera not opened.")
+            print("Camera not opened in gen_frames.")
             return
 
-        print("Camera opened successfully.")
+        print("Camera opened in gen_frames.")
         frame_count = 0
 
         try:
             while self.providing_frames:
                 success, frame = self.cap.read()
-                if not success or not self.providing_frames:  # Exit gracefully if logging is stopped
-                    print("Failed to capture frame or logging stopped.")
+                if not success:
+                    print("Failed to capture frame.")
                     break
 
                 current_time = time.time()
                 self.frame_times.append(current_time)
-
                 if len(self.frame_times) > 30:
                     self.frame_times.pop(0)
 
-                if not self.has_setup_writer and self.logging_active:
+                if self.logging_active and self.video_writer is None:
                     dynamic_frame_rate = self.calculate_frame_rate()
-                    print(f"Calculated frame rate: {dynamic_frame_rate}")
-
+                    print(f"Starting video recording at {dynamic_frame_rate} fps")
                     fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate, (640, 480))
-                    self.has_setup_writer = True
-                    print(f"Video writer set up with file name: {self.video_file_name}")
 
                 if self.logging_active and self.video_writer is not None:
                     self.video_writer.write(frame)
@@ -131,23 +114,19 @@ class Logger:
                 frame = buffer.tobytes()
                 self.frame_queue.put(frame)
 
-            if self.has_setup_writer:
-                print(f"Captured {frame_count} frames.")
-
         except Exception as e:
-            print(f"Error while reading camera stream: {e}")
+            print(f"Error in gen_frames: {e}")
         finally:
             if self.video_writer is not None:
                 self.video_writer.release()
-            self.has_setup_writer = False
-            self.providing_frames = False  # Ensure the flag is reset for future sessions
+                self.video_writer = None
+            self.providing_frames = False  # Ensure this is reset
 
     def get_frame(self):
         while True:
             frame = self.frame_queue.get()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
 
 @app.route('/')
 def index():
@@ -161,7 +140,6 @@ def index():
         data = []
 
     return render_template('index.html', data=data)
-
 
 @app.route('/start', methods=['POST'])
 def start_logging():

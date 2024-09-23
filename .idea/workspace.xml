@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixing recording video across multiple logging sessions on one server launch session." />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Fixing recording video across multiple logging sessions on one server launch session.">
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +119,7 @@
       <workItem from="1726644149485" duration="901000" />
       <workItem from="1726825685394" duration="1218000" />
       <workItem from="1727088321873" duration="227000" />
-      <workItem from="1727092002715" duration="3476000" />
+      <workItem from="1727092002715" duration="3683000" />
     </task>
     <task id="LOCAL-00001" summary="Added dynamic retrieval of frame size and frame rate">
       <option name="closed" value="true" />
@@ -383,7 +385,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727095878856</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Fixing recording video across multiple logging sessions on one server launch session.">
+      <option name="closed" value="true" />
+      <created>1727096604429</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1727096604429</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -17,7 +17,7 @@ class Logger:
         self.providing_frames = True
         self.has_setup_writer = False  # Track if the video writer has been set up
         self.video_writer = None
-        self.cap = cv2.VideoCapture(0)  # Initialize the VideoCapture here
+        self.cap = None  # Initialize as None, set up later
         self.frame_thread = None
         self.frame_queue = queue.Queue()
         self.comments = {}
@@ -27,14 +27,14 @@ class Logger:
         self.start_frame_thread()
 
     def start_frame_thread(self):
-        """ Start the frame thread if it's not already running. """
+        """Start the frame thread if it's not already running."""
         if self.frame_thread is None or not self.frame_thread.is_alive():
             self.providing_frames = True
             self.frame_thread = threading.Thread(target=self.gen_frames)
             self.frame_thread.start()
 
     def get_frame_rate(self):
-        return self.cap.get(cv2.CAP_PROP_FPS)
+        return self.cap.get(cv2.CAP_PROP_FPS) if self.cap else 30.0
 
     def cleanup_video_writer(self):
         if self.video_writer is not None:
@@ -55,7 +55,11 @@ class Logger:
         # Reinitialize the video capture device
         if self.cap is not None:
             self.cap.release()
+            time.sleep(1)  # Short delay to ensure the resource is properly released
         self.cap = cv2.VideoCapture(0)
+        if not self.cap.isOpened():
+            print("Failed to open camera after starting logging.")
+            return
 
         # Restart frame capture thread
         self.start_frame_thread()
@@ -67,6 +71,11 @@ class Logger:
 
         # Call cleanup to properly close video writer
         self.cleanup_video_writer()
+
+        # Release the capture device properly
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
 
         # Wait for the frame thread to finish processing
         if self.frame_thread is not None:
@@ -85,8 +94,8 @@ class Logger:
         return min(average_frame_rate, 30.0)
 
     def gen_frames(self):
-        if not self.cap.isOpened():
-            print("Failed to open camera.")
+        if self.cap is None or not self.cap.isOpened():
+            print("Camera not opened.")
             return
 
         print("Camera opened successfully.")
@@ -95,7 +104,7 @@ class Logger:
         try:
             while self.providing_frames:
                 success, frame = self.cap.read()
-                if not success or not self.providing_frames:
+                if not success or not self.providing_frames:  # Exit gracefully if logging is stopped
                     print("Failed to capture frame or logging stopped.")
                     break
 
@@ -138,6 +147,7 @@ class Logger:
             frame = self.frame_queue.get()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
 
 @app.route('/')
 def index():

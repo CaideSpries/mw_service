@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Testing threading">
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Daemonize the threading and added debug print statements.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -467,7 +467,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727267543786</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="Daemonize the threading and added debug print statements.">
+      <option name="closed" value="true" />
+      <created>1727267936472</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1727267936472</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -546,6 +554,7 @@
     <MESSAGE value="Changed from XVID to MJPG. Changed from .avi to .mp4" />
     <MESSAGE value="Changed from MJPEG to mp4v. Increased delay" />
     <MESSAGE value="Testing threading" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing threading" />
+    <MESSAGE value="Daemonize the threading and added debug print statements." />
+    <option name="LAST_COMMIT_MESSAGE" value="Daemonize the threading and added debug print statements." />
   </component>
 </project>

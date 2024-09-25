@@ -120,7 +120,7 @@ class Logger:
                 if self.logging_active and not self.has_setup_writer:
                     try:
                         dynamic_frame_rate = self.calculate_frame_rate()
-                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                        fourcc = cv2.VideoWriter_fourcc(*'XVID')
                         self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate,
                                                             (640, 480))
                         self.has_setup_writer = True
@@ -134,6 +134,7 @@ class Logger:
                     try:
                         self.video_writer.write(frame)
                         frame_count += 1
+                        time.sleep(0.01)  # Small delay to help sync
                     except Exception as e:
                         print(f"Error writing frame: {e}")
                         break

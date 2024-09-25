@@ -11,14 +11,15 @@ import logging
 # Define a filter to suppress specific route logs
 class NoLoggingFilter(logging.Filter):
     def filter(self, record):
-        # Only attempt to check the request path if there is an active request context
+        # Check if the request context is active before trying to access `request.path`
         if has_request_context():
             return request.path != '/get_latest_data'
-        return True  # Allow logging if not in a request context
+        return True
 
 # Apply this filter to the werkzeug logger
 werkzeug_logger = logging.getLogger('werkzeug')
 werkzeug_logger.addFilter(NoLoggingFilter())
+werkzeug_logger.setLevel(logging.INFO)  # Adjust the log level as needed
 app = Flask(__name__)
 
 class Logger:

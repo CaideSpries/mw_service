@@ -46,7 +46,7 @@ class Logger:
 
     def start_logging(self, power_setting, catalyst, microwave_duration):
         self.log_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_sensor_log.csv"
-        self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.avi"
+        self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.mp4"
         self.comments.clear()
         self.logging_active = True
         self.has_setup_writer = False  # Reset the writer setup flag
@@ -65,6 +65,9 @@ class Logger:
         # Clear frame times to avoid inconsistent frame rates
         self.frame_times.clear()
 
+        # Add a small delay to ensure resources are flushed correctly
+        time.sleep(1)
+
         if self.video_file_name:
             print(f"Video saved in file: {self.video_file_name}")
 
@@ -76,7 +79,7 @@ class Logger:
             return 30.0
         total_time = self.frame_times[-1] - self.frame_times[0]
         average_frame_rate = len(self.frame_times) / total_time if total_time > 0 else 30.0
-        return min(average_frame_rate, 30.0)
+        return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
         self.comments[timestamp] = comment  # Save the comment in the dictionary for future reference
@@ -115,7 +118,7 @@ class Logger:
                 # Setup video writer if logging has started
                 if self.logging_active and not self.has_setup_writer:
                     dynamic_frame_rate = self.calculate_frame_rate()
-                    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate, (640, 480))
                     self.has_setup_writer = True
                     print(f"Video writer initialized for recording at {dynamic_frame_rate} fps")
@@ -154,7 +157,7 @@ class Logger:
             self.cap.release()
         self.providing_frames = False
         if self.frame_thread is not None:
-            self.frame_thread.join()
+            self.frame_thread.join(timeout=2)
         print("Camera and resources cleaned up.")
 
 @app.route('/')
@@ -260,7 +263,7 @@ def remove_old_files(directory, max_age_minutes=10):
 
     for filename in os.listdir(directory):
         file_path = os.path.join(directory, filename)
-        if os.path.isfile(file_path) and (filename.endswith('.csv') or filename.endswith('.avi')):
+        if os.path.isfile(file_path) and (filename.endswith('.csv') or filename.endswith('.mp4')):
             file_creation_time = os.path.getctime(file_path)
             if current_time - file_creation_time > max_age_seconds:
                 try:

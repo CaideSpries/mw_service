@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added log comment">
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added explicit print statements for clear explanations.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log_sensors.py" beforeDir="false" afterPath="$PROJECT_DIR$/log_sensors.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +20,7 @@
       </list>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -123,7 +123,6 @@
       <workItem from="1727088321873" duration="227000" />
       <workItem from="1727092002715" duration="6874000" />
       <workItem from="1727262910074" duration="274000" />
-      <workItem from="1727263186435" duration="391000" />
     </task>
     <task id="LOCAL-00001" summary="Added dynamic retrieval of frame size and frame rate">
       <option name="closed" value="true" />
@@ -437,23 +436,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727249468961</updated>
     </task>
-    <task id="LOCAL-00040" summary="Added log comment">
+    <task id="LOCAL-00040" summary="Added explicit print statements for clear explanations.">
       <option name="closed" value="true" />
-      <created>1727263208835</created>
+      <created>1727264481834</created>
       <option name="number" value="00040" />
       <option name="presentableId" value="LOCAL-00040" />
       <option name="project" value="LOCAL" />
-      <updated>1727263208835</updated>
+      <updated>1727264481834</updated>
     </task>
-    <task id="LOCAL-00041" summary="Added log comment">
-      <option name="closed" value="true" />
-      <created>1727263528304</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1727263528304</updated>
-    </task>
-    <option name="localTasksCounter" value="42" />
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -528,7 +519,7 @@
     <MESSAGE value="Added timer to cleanup_video_writer, and joining the frame_thread in stop_logging" />
     <MESSAGE value="Fixing recording video across multiple logging sessions on one server launch session." />
     <MESSAGE value="Added a filter for cleaning up logs" />
-    <MESSAGE value="Added log comment" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added log comment" />
+    <MESSAGE value="Added explicit print statements for clear explanations." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added explicit print statements for clear explanations." />
   </component>
 </project>

@@ -22,25 +22,30 @@ werkzeug_logger.addFilter(NoLoggingFilter())
 werkzeug_logger.setLevel(logging.WARNING)  # Adjust the log level as needed
 app = Flask(__name__)
 
+
 class Logger:
     def __init__(self):
         self.log_file_name = None
         self.video_file_name = None
         self.logging_active = False
-        self.providing_frames = True  # Always provide frames for live feed
+        self.providing_frames = True
         self.video_writer = None
-        self.cap = cv2.VideoCapture(0)  # Start capturing as soon as Logger is created
+        self.cap = cv2.VideoCapture(0)
         self.frame_thread = None
         self.frame_queue = queue.Queue()
         self.comments = {}
         self.frame_times = []
         self.has_setup_writer = False
+        self.log_lock = threading.Lock()
 
-        # Start the frame generation thread immediately
+        # Queue and thread for handling comments
+        self.comment_queue = queue.Queue()
+        self.comment_thread = threading.Thread(target=self.process_comments, daemon=True)
+        self.comment_thread.start()
+
         if self.cap.isOpened():
-            self.frame_thread = threading.Thread(target=self.gen_frames, daemon=True)  # Daemonize the thread
+            self.frame_thread = threading.Thread(target=self.gen_frames, daemon=True)
             self.frame_thread.start()
-            #self.gen_frames()  # Run gen_frames directly without threading
             print("Live stream thread started.")
         else:
             print("Failed to open camera on initialization.")
@@ -50,24 +55,20 @@ class Logger:
         self.video_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_video.mp4"
         self.comments.clear()
         self.logging_active = True
-        self.has_setup_writer = False  # Reset the writer setup flag
+        self.has_setup_writer = False
         log_sensors.start_logging(self.log_file_name)
 
     def stop_logging(self):
         log_sensors.stop_logging()
         self.logging_active = False
 
-        # Release video writer
         if self.video_writer is not None:
             self.video_writer.release()
             self.video_writer = None
             self.has_setup_writer = False
             print("Video writer released in stop_logging.")
 
-        # Clear frame times to avoid inconsistent frame rates
         self.frame_times.clear()
-
-        # Add a small delay to ensure resources are flushed correctly
         time.sleep(2)
 
         if self.video_file_name:
@@ -80,23 +81,34 @@ class Logger:
             return 30.0
         total_time = self.frame_times[-1] - self.frame_times[0]
         average_frame_rate = len(self.frame_times) / total_time if total_time > 0 else 30.0
-        return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
+        return max(min(average_frame_rate, 30.0), 1.0)
 
     def log_comment(self, timestamp, comment):
-        self.comments[timestamp] = comment  # Save the comment in the dictionary for future reference
-        if self.log_file_name:
-            with open(self.log_file_name, mode='r+', newline='') as file:
-                reader = csv.reader(file)
-                rows = list(reader)
-                file.seek(0)
-                writer = csv.writer(file)
+        self.comment_queue.put((timestamp, comment))  # Add comment to the queue
 
-                for row in rows:
-                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and match the timestamp
-                        if len(row) < 11:  # Ensure the row has enough columns
-                            row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
-                        row[10] = comment  # Update the comment column
-                    writer.writerow(row)
+    def process_comments(self):
+        while True:
+            timestamp, comment = self.comment_queue.get()  # Retrieve a comment from the queue
+            if timestamp is None:  # Stop processing if a sentinel value is received
+                break
+            try:
+                with self.log_lock:
+                    if self.log_file_name:
+                        with open(self.log_file_name, mode='r+', newline='') as file:
+                            reader = csv.reader(file)
+                            rows = list(reader)
+                            file.seek(0)
+                            writer = csv.writer(file)
+
+                            for row in rows:
+                                if len(row) > 0 and row[0] == timestamp:
+                                    if len(row) < 11:
+                                        row.extend([''] * (11 - len(row)))
+                                    row[10] = comment
+                                writer.writerow(row)
+                            file.truncate()
+            except Exception as e:
+                print(f"Error processing comment for timestamp {timestamp}: {e}")
 
     def gen_frames(self):
         if not self.cap.isOpened():
@@ -116,7 +128,6 @@ class Logger:
                 if len(self.frame_times) > 30:
                     self.frame_times.pop(0)
 
-                # Setup video writer if logging has started
                 if self.logging_active and not self.has_setup_writer:
                     try:
                         dynamic_frame_rate = self.calculate_frame_rate()
@@ -129,17 +140,15 @@ class Logger:
                         print(f"Error initializing video writer: {e}")
                         break
 
-                # Write frame if logging
                 if self.logging_active and self.video_writer is not None:
                     try:
                         self.video_writer.write(frame)
                         frame_count += 1
-                        time.sleep(0.01)  # Small delay to help sync
+                        time.sleep(0.01)
                     except Exception as e:
                         print(f"Error writing frame: {e}")
                         break
 
-                # Convert frame to JPEG and queue it for the live feed
                 try:
                     ret, buffer = cv2.imencode('.jpg', frame)
                     if not ret:
@@ -164,37 +173,31 @@ class Logger:
             self.has_setup_writer = False
             print("Exiting gen_frames.")
 
-    def get_frame(self):
-        while True:
-            frame = self.frame_queue.get()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
     def cleanup(self):
-        # Stop providing frames and ensure the frame generation thread stops
         self.providing_frames = False
 
-        # Join the frame thread with a longer timeout to ensure it completes
         if self.frame_thread is not None:
-            self.frame_thread.join(timeout=5)  # Increase timeout
+            self.frame_thread.join(timeout=5)
             print("Frame thread joined successfully.")
 
-        # Release the video writer, ensuring it is flushed
         if self.video_writer is not None:
             self.video_writer.release()
-            self.video_writer = None  # Explicitly set to None
+            self.video_writer = None
             print("Video writer released in cleanup.")
 
-        # Release the camera resource
         if self.cap is not None and self.cap.isOpened():
             self.cap.release()
-            self.cap = None  # Explicitly set to None
+            self.cap = None
             print("Camera released in cleanup.")
 
-        # Clear the frame queue
         with self.frame_queue.mutex:
             self.frame_queue.queue.clear()
             print("Frame queue cleared in cleanup.")
+
+        # Send a sentinel value to stop the comment processing thread
+        self.comment_queue.put((None, None))
+        self.comment_thread.join()
+        print("Comment processing thread terminated.")
 
         print("Cleanup completed.")
 

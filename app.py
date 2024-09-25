@@ -19,7 +19,7 @@ class NoLoggingFilter(logging.Filter):
 # Apply this filter to the werkzeug logger
 werkzeug_logger = logging.getLogger('werkzeug')
 werkzeug_logger.addFilter(NoLoggingFilter())
-werkzeug_logger.setLevel(logging.INFO)  # Adjust the log level as needed
+werkzeug_logger.setLevel(logging.WARNING)  # Adjust the log level as needed
 app = Flask(__name__)
 
 class Logger:

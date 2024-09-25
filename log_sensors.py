@@ -125,7 +125,7 @@ def start_logging(log_file):
 def stop_logging():
     global logging_active
     logging_active = False
-    print("Logging stopped.")
+    print("Logging Sensors stopped.")
 
 if __name__ == "__main__":
     try:

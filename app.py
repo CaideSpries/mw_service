@@ -72,6 +72,22 @@ class Logger:
         average_frame_rate = len(self.frame_times) / total_time if total_time > 0 else 30.0
         return min(average_frame_rate, 30.0)
 
+    def log_comment(self, timestamp, comment):
+        self.comments[timestamp] = comment  # Save the comment in the dictionary for future reference
+        if self.log_file_name:
+            with open(self.log_file_name, mode='r+', newline='') as file:
+                reader = csv.reader(file)
+                rows = list(reader)
+                file.seek(0)
+                writer = csv.writer(file)
+
+                for row in rows:
+                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and match the timestamp
+                        if len(row) < 11:  # Ensure the row has enough columns
+                            row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
+                        row[10] = comment  # Update the comment column
+                    writer.writerow(row)
+
     def gen_frames(self):
         if not self.cap.isOpened():
             print("Camera is not opened in gen_frames.")

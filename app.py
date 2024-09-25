@@ -34,6 +34,7 @@ class Logger:
         self.frame_queue = queue.Queue()
         self.comments = {}
         self.frame_times = []
+        self.comment_queue = queue.Queue()  # Queue to hold comments to be added
         self.has_setup_writer = False
 
         # Start the frame generation thread immediately
@@ -44,6 +45,10 @@ class Logger:
             print("Live stream thread started.")
         else:
             print("Failed to open camera on initialization.")
+
+        # Start a separate thread to process queued comments every few seconds
+        self.comment_processing_thread = threading.Thread(target=self.process_comment_queue, daemon=True)
+        self.comment_processing_thread.start()
 
     def start_logging(self, power_setting, catalyst, microwave_duration):
         self.log_file_name = f"{power_setting}_{catalyst}_{microwave_duration}_sensor_log.csv"
@@ -83,20 +88,41 @@ class Logger:
         return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
-        self.comments[timestamp] = comment  # Save the comment in the dictionary for future reference
-        if self.log_file_name:
-            with open(self.log_file_name, mode='r+', newline='') as file:
-                reader = csv.reader(file)
-                rows = list(reader)
-                file.seek(0)
-                writer = csv.writer(file)
+        # Place the comment in the queue
+        self.comment_queue.put((timestamp, comment))
+        print(f"Comment queued for timestamp {timestamp}")
 
-                for row in rows:
-                    if len(row) > 0 and row[0] == timestamp:  # Ensure row has elements and match the timestamp
-                        if len(row) < 11:  # Ensure the row has enough columns
-                            row.extend([''] * (11 - len(row)))  # Extend the row to have 11 columns
-                        row[10] = comment  # Update the comment column
-                    writer.writerow(row)
+    def process_comment_queue(self):
+        while True:
+            try:
+                # Check if there are any comments to process
+                if not self.comment_queue.empty():
+                    timestamp, comment = self.comment_queue.get()
+                    self.update_comment_in_file(timestamp, comment)
+                    self.comment_queue.task_done()  # Mark this comment as processed
+                time.sleep(2)  # Check the queue every 2 seconds
+            except Exception as e:
+                print(f"Error while processing comments: {e}")
+
+    def update_comment_in_file(self, timestamp, comment):
+        try:
+            if self.log_file_name:
+                with open(self.log_file_name, mode='r+', newline='') as file:
+                    reader = csv.reader(file)
+                    rows = list(reader)
+                    file.seek(0)
+                    writer = csv.writer(file)
+
+                    for row in rows:
+                        if len(row) > 0 and row[0] == timestamp:
+                            if len(row) < 11:
+                                row.extend([''] * (11 - len(row)))
+                            row[10] = comment  # Add/replace the comment in the correct column
+                        writer.writerow(row)
+                    file.truncate()  # Ensure the file doesn’t contain old data
+                print(f"Comment '{comment}' added to timestamp {timestamp}")
+        except Exception as e:
+            print(f"Error updating comment for timestamp {timestamp}: {e}")
 
     def gen_frames(self):
         if not self.cap.isOpened():

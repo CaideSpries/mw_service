@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a delay to write frame if logging">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-    </list>
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added debugging" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -484,7 +481,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727271458906</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Added debugging">
+      <option name="closed" value="true" />
+      <created>1727273559573</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1727273559573</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -539,7 +544,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added more columns for 8 thermistors" />
     <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
     <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
     <MESSAGE value="Fixed the comment section" />
@@ -564,6 +568,7 @@
     <MESSAGE value="Testing threading" />
     <MESSAGE value="Daemonize the threading and added debug print statements." />
     <MESSAGE value="Added a delay to write frame if logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a delay to write frame if logging" />
+    <MESSAGE value="Added debugging" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added debugging" />
   </component>
 </project>

@@ -38,9 +38,9 @@ class Logger:
 
         # Start the frame generation thread immediately
         if self.cap.isOpened():
-            #self.frame_thread = threading.Thread(target=self.gen_frames)
-            #self.frame_thread.start()
-            self.gen_frames()  # Run gen_frames directly without threading
+            self.frame_thread = threading.Thread(target=self.gen_frames, daemon=True)  # Daemonize the thread
+            self.frame_thread.start()
+            #self.gen_frames()  # Run gen_frames directly without threading
             print("Live stream thread started.")
         else:
             print("Failed to open camera on initialization.")
@@ -166,16 +166,19 @@ class Logger:
         # Join the frame thread with a longer timeout to ensure it completes
         if self.frame_thread is not None:
             self.frame_thread.join(timeout=5)  # Increase timeout
+            print("Frame thread joined successfully.")
 
         # Release the video writer, ensuring it is flushed
         if self.video_writer is not None:
             self.video_writer.release()
             self.video_writer = None  # Explicitly set to None
+            print("Video writer released in cleanup.")
 
         # Release the camera resource
         if self.cap is not None and self.cap.isOpened():
             self.cap.release()
             self.cap = None  # Explicitly set to None
+            print("Camera released in cleanup.")
 
         print("Camera and resources cleaned up.")
 

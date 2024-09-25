@@ -173,6 +173,12 @@ class Logger:
             self.has_setup_writer = False
             print("Exiting gen_frames.")
 
+    def get_frame(self):
+        while True:
+            frame = self.frame_queue.get()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
     def cleanup(self):
         self.providing_frames = False
 

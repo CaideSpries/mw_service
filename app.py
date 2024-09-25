@@ -51,7 +51,6 @@ class Logger:
         self.logging_active = True
         self.has_setup_writer = False  # Reset the writer setup flag
         log_sensors.start_logging(self.log_file_name)
-        print(f"Logging started with video file: {self.video_file_name}")
 
     def stop_logging(self):
         log_sensors.stop_logging()
@@ -64,6 +63,7 @@ class Logger:
             self.has_setup_writer = False
 
         print("Logging stopped and resources cleaned up.")
+        print(f"Video recorded in file: {self.video_file_name}")
 
     def calculate_frame_rate(self):
         if len(self.frame_times) < 2:

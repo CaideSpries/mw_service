@@ -6,7 +6,17 @@ import cv2
 import threading
 import queue
 import time
+import logging
 
+# Define a filter to suppress specific route logs
+class NoLoggingFilter(logging.Filter):
+    def filter(self, record):
+        # Suppress logging for /get_latest_data route
+        return request.path != '/get_latest_data'
+
+# Apply this filter to the werkzeug logger
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.addFilter(NoLoggingFilter())
 app = Flask(__name__)
 
 class Logger:

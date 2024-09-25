@@ -38,8 +38,9 @@ class Logger:
 
         # Start the frame generation thread immediately
         if self.cap.isOpened():
-            self.frame_thread = threading.Thread(target=self.gen_frames)
-            self.frame_thread.start()
+            #self.frame_thread = threading.Thread(target=self.gen_frames)
+            #self.frame_thread.start()
+            self.gen_frames()  # Run gen_frames directly without threading
             print("Live stream thread started.")
         else:
             print("Failed to open camera on initialization.")
@@ -117,26 +118,35 @@ class Logger:
 
                 # Setup video writer if logging has started
                 if self.logging_active and not self.has_setup_writer:
-                    dynamic_frame_rate = self.calculate_frame_rate()
-                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                    self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate, (640, 480))
-                    self.has_setup_writer = True
-                    print(f"Video writer initialized for recording at {dynamic_frame_rate} fps")
+                    try:
+                        dynamic_frame_rate = self.calculate_frame_rate()
+                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                        self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate,
+                                                            (640, 480))
+                        self.has_setup_writer = True
+                        print(f"Video writer initialized for recording at {dynamic_frame_rate} fps")
+                    except Exception as e:
+                        print(f"Error initializing video writer: {e}")
+                        break
 
                 # Write frame if logging
                 if self.logging_active and self.video_writer is not None:
-                    self.video_writer.write(frame)
-                    frame_count += 1
+                    try:
+                        self.video_writer.write(frame)
+                        frame_count += 1
+                    except Exception as e:
+                        print(f"Error writing frame: {e}")
+                        break
 
                 # Convert frame to JPEG and queue it for the live feed
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
                 self.frame_queue.put(frame)
+        except Exception as e:
+            print(f"Error in gen_frames: {e}")
 
             print(f"Finished capturing {frame_count} frames during logging.")
 
-        except Exception as e:
-            print(f"Error in gen_frames: {e}")
         finally:
             if self.video_writer is not None:
                 self.video_writer.release()
@@ -150,22 +160,25 @@ class Logger:
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     def cleanup(self):
-        # Stop providing frames and join the thread to ensure it's fully stopped
+        # Stop providing frames and ensure the frame generation thread stops
         self.providing_frames = False
 
-        # Join the frame thread (with timeout to avoid hanging)
+        # Join the frame thread with a longer timeout to ensure it completes
         if self.frame_thread is not None:
-            self.frame_thread.join(timeout=2)
+            self.frame_thread.join(timeout=5)  # Increase timeout
 
-        # Release the video writer, if initialized
+        # Release the video writer, ensuring it is flushed
         if self.video_writer is not None:
             self.video_writer.release()
+            self.video_writer = None  # Explicitly set to None
 
-        # Release the camera, if initialized
-        if self.cap is not None:
+        # Release the camera resource
+        if self.cap is not None and self.cap.isOpened():
             self.cap.release()
+            self.cap = None  # Explicitly set to None
 
         print("Camera and resources cleaned up.")
+
 
 @app.route('/')
 def index():

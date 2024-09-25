@@ -66,7 +66,7 @@ class Logger:
         self.frame_times.clear()
 
         # Add a small delay to ensure resources are flushed correctly
-        time.sleep(1)
+        time.sleep(2)
 
         if self.video_file_name:
             print(f"Video saved in file: {self.video_file_name}")
@@ -118,7 +118,7 @@ class Logger:
                 # Setup video writer if logging has started
                 if self.logging_active and not self.has_setup_writer:
                     dynamic_frame_rate = self.calculate_frame_rate()
-                    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                     self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate, (640, 480))
                     self.has_setup_writer = True
                     print(f"Video writer initialized for recording at {dynamic_frame_rate} fps")
@@ -150,14 +150,21 @@ class Logger:
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     def cleanup(self):
-        # Call this function on exit or termination to release all resources
-        if self.video_writer is not None:
-            self.video_writer.release()
-        if self.cap is not None:
-            self.cap.release()
+        # Stop providing frames and join the thread to ensure it's fully stopped
         self.providing_frames = False
+
+        # Join the frame thread (with timeout to avoid hanging)
         if self.frame_thread is not None:
             self.frame_thread.join(timeout=2)
+
+        # Release the video writer, if initialized
+        if self.video_writer is not None:
+            self.video_writer.release()
+
+        # Release the camera, if initialized
+        if self.cap is not None:
+            self.cap.release()
+
         print("Camera and resources cleaned up.")
 
 @app.route('/')

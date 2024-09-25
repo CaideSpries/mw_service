@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added explicit print statements for clear explanations.">
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Changed from XVID to MJPG. Changed from .avi to .mp4">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -444,7 +443,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727264481834</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Changed from XVID to MJPG. Changed from .avi to .mp4">
+      <option name="closed" value="true" />
+      <created>1727266327801</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1727266327801</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -520,6 +527,7 @@
     <MESSAGE value="Fixing recording video across multiple logging sessions on one server launch session." />
     <MESSAGE value="Added a filter for cleaning up logs" />
     <MESSAGE value="Added explicit print statements for clear explanations." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added explicit print statements for clear explanations." />
+    <MESSAGE value="Changed from XVID to MJPG. Changed from .avi to .mp4" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed from XVID to MJPG. Changed from .avi to .mp4" />
   </component>
 </project>

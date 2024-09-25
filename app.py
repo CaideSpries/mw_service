@@ -62,6 +62,7 @@ class Logger:
             self.video_writer.release()
             self.video_writer = None
             self.has_setup_writer = False
+            print("Video writer released in stop_logging.")
 
         # Clear frame times to avoid inconsistent frame rates
         self.frame_times.clear()
@@ -73,7 +74,6 @@ class Logger:
             print(f"Video saved in file: {self.video_file_name}")
 
         print("Logging stopped and resources cleaned up.")
-        print(f"Video recorded in file: {self.video_file_name}")
 
     def calculate_frame_rate(self):
         if len(self.frame_times) < 2:
@@ -120,7 +120,7 @@ class Logger:
                 if self.logging_active and not self.has_setup_writer:
                     try:
                         dynamic_frame_rate = self.calculate_frame_rate()
-                        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                         self.video_writer = cv2.VideoWriter(self.video_file_name, fourcc, dynamic_frame_rate,
                                                             (640, 480))
                         self.has_setup_writer = True
@@ -140,19 +140,29 @@ class Logger:
                         break
 
                 # Convert frame to JPEG and queue it for the live feed
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame = buffer.tobytes()
-                self.frame_queue.put(frame)
-        except Exception as e:
-            print(f"Error in gen_frames: {e}")
+                try:
+                    ret, buffer = cv2.imencode('.jpg', frame)
+                    if not ret:
+                        print("Failed to encode frame to JPEG.")
+                        continue
+                    frame = buffer.tobytes()
+                    self.frame_queue.put(frame)
+                except Exception as e:
+                    print(f"Error encoding or queuing frame: {e}")
+                    break
 
             print(f"Finished capturing {frame_count} frames during logging.")
+
+        except Exception as e:
+            print(f"Error in gen_frames: {e}")
 
         finally:
             if self.video_writer is not None:
                 self.video_writer.release()
                 self.video_writer = None
+                print("Video writer released in gen_frames cleanup.")
             self.has_setup_writer = False
+            print("Exiting gen_frames.")
 
     def get_frame(self):
         while True:
@@ -181,7 +191,12 @@ class Logger:
             self.cap = None  # Explicitly set to None
             print("Camera released in cleanup.")
 
-        print("Camera and resources cleaned up.")
+        # Clear the frame queue
+        with self.frame_queue.mutex:
+            self.frame_queue.queue.clear()
+            print("Frame queue cleared in cleanup.")
+
+        print("Cleanup completed.")
 
 
 @app.route('/')
@@ -306,12 +321,7 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=5000)
     except KeyboardInterrupt:
         print("Keyboard interrupt detected.")
-        logger.stop_logging()
-        logger.providing_frames = False
-        if logger.cap.isOpened():
-            logger.cap.release()
-            print("Camera released.")
+    finally:
+        logger.cleanup()
+        print("Application terminated gracefully.")
 
-        # Ensure the frame thread is properly stopped
-        if logger.frame_thread is not None:
-            logger.frame_thread.join()

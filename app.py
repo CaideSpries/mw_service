@@ -35,6 +35,7 @@ class Logger:
         self.comments = {}
         self.frame_times = []
         self.comment_queue = queue.Queue()  # Queue to hold comments to be added
+        self.comment_batch = {}  # Use a dictionary to collect comments for each timestamp
         self.has_setup_writer = False
 
         # Start the frame generation thread immediately
@@ -88,25 +89,33 @@ class Logger:
         return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
-        # Place the comment in the queue
+        # Add the comment to the queue
         self.comment_queue.put((timestamp, comment))
         print(f"Comment queued for timestamp {timestamp}")
 
     def process_comment_queue(self):
         while True:
             try:
-                # Check if there are any comments to process
-                if not self.comment_queue.empty():
+                # Process multiple comments in one go
+                while not self.comment_queue.empty():
                     timestamp, comment = self.comment_queue.get()
-                    self.update_comment_in_file(timestamp, comment)
-                    self.comment_queue.task_done()  # Mark this comment as processed
-                time.sleep(2)  # Check the queue every 2 seconds
+                    if timestamp not in self.comment_batch:
+                        self.comment_batch[timestamp] = comment  # Store the first comment
+                    else:
+                        self.comment_batch[timestamp] += " | " + comment  # Append additional comments
+                    self.comment_queue.task_done()
+
+                # Update the file if there are pending comments
+                if self.comment_batch:
+                    self.update_comments_in_file()
+
+                time.sleep(1)  # Reduce sleep time for more frequent processing
             except Exception as e:
                 print(f"Error while processing comments: {e}")
 
-    def update_comment_in_file(self, timestamp, comment):
+    def update_comments_in_file(self):
         try:
-            if self.log_file_name:
+            if self.log_file_name and self.comment_batch:
                 with open(self.log_file_name, mode='r+', newline='') as file:
                     reader = csv.reader(file)
                     rows = list(reader)
@@ -114,15 +123,16 @@ class Logger:
                     writer = csv.writer(file)
 
                     for row in rows:
-                        if len(row) > 0 and row[0] == timestamp:
+                        if len(row) > 0 and row[0] in self.comment_batch:
                             if len(row) < 11:
                                 row.extend([''] * (11 - len(row)))
-                            row[10] = comment  # Add/replace the comment in the correct column
+                            row[10] = self.comment_batch[row[0]]  # Add/replace the comment in the correct column
+                            del self.comment_batch[row[0]]  # Remove the comment from the batch once processed
                         writer.writerow(row)
                     file.truncate()  # Ensure the file doesn’t contain old data
-                print(f"Comment '{comment}' added to timestamp {timestamp}")
+                print("Batch comments processed.")
         except Exception as e:
-            print(f"Error updating comment for timestamp {timestamp}: {e}")
+            print(f"Error updating comments in file: {e}")
 
     def gen_frames(self):
         if not self.cap.isOpened():

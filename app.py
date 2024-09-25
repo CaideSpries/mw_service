@@ -62,6 +62,12 @@ class Logger:
             self.video_writer = None
             self.has_setup_writer = False
 
+        # Clear frame times to avoid inconsistent frame rates
+        self.frame_times.clear()
+
+        if self.video_file_name:
+            print(f"Video saved in file: {self.video_file_name}")
+
         print("Logging stopped and resources cleaned up.")
         print(f"Video recorded in file: {self.video_file_name}")
 

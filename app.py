@@ -7,6 +7,9 @@ import threading
 import queue
 import time
 import logging
+import heapq
+from threading import Lock
+
 
 # Define a filter to suppress specific route logs
 class NoLoggingFilter(logging.Filter):
@@ -35,7 +38,11 @@ class Logger:
         self.comments = {}
         self.frame_times = []
         self.comment_queue = queue.Queue()  # Queue to hold comments to be added
-        self.comment_batch = {}  # Use a dictionary to collect comments for each timestamp
+
+        # Use a list to represent the priority queue and a lock for thread safety
+        self.comment_queue = []  # Priority queue implemented as a list
+        self.comment_lock = Lock()  # Lock for thread-safe access
+
         self.has_setup_writer = False
 
         # Start the frame generation thread immediately
@@ -89,21 +96,23 @@ class Logger:
         return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
-        self.comment_queue.put((timestamp, comment))
-       # print(f"Comment queued for timestamp {timestamp}")
+        with self.comment_lock:
+            # Use `heapq.heappush` to maintain the priority queue order
+            heapq.heappush(self.comment_queue, (float(timestamp), comment))
+        print(f"Comment queued for timestamp {timestamp}")
 
     def process_comment_queue(self):
         while True:
             try:
-                # Collect all available comments from the queue into a list
                 comments_to_process = []
-                while not self.comment_queue.empty():
-                    comments_to_process.append(self.comment_queue.get())
-                    self.comment_queue.task_done()  # Mark this comment as processed
+                with self.comment_lock:
+                    # Collect all available comments from the priority queue
+                    while self.comment_queue:
+                        comments_to_process.append(heapq.heappop(self.comment_queue))  # Pop the earliest item
 
                 if comments_to_process:
                     self.batch_update_comments_in_file(comments_to_process)
-                    print(f"Processed a batch of {len(comments_to_process)} comments.")
+                    print(f"Processed a batch of {len(comments_to_process)} comments inside process comment queue.")
 
                 time.sleep(2)  # Process every 2 seconds
 
@@ -119,7 +128,7 @@ class Logger:
                     rows = list(reader)
 
                     # Create a dictionary for quick lookup of new comments
-                    comment_dict = {timestamp: comment for timestamp, comment in comments}
+                    comment_dict = {str(timestamp): comment for timestamp, comment in comments}
 
                     # Update rows with comments
                     for row in rows:
@@ -134,7 +143,7 @@ class Logger:
                     writer.writerows(rows)
                     file.truncate()
 
-                # print(f"Batch of {len(comments)} comments processed.")
+                print(f"Batch of {len(comments)} comments processed inside batch update.")
 
         except Exception as e:
             print(f"Error updating comments in batch: {e}")

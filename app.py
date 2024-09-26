@@ -107,7 +107,7 @@ class Logger:
                 # Use `heapq.heappush` to maintain the priority queue order with the epoch timestamp
                 heapq.heappush(self.comment_queue, (timestamp_epoch, comment))
 
-            print(f"Comment queued for timestamp {timestamp}")
+            # print(f"Comment queued for timestamp {timestamp}")
 
         except ValueError as e:
             print(f"Error converting timestamp: {e}")
@@ -123,7 +123,7 @@ class Logger:
 
                 if comments_to_process:
                     self.batch_update_comments_in_file(comments_to_process)
-                    print(f"Processed a batch of {len(comments_to_process)} comments inside process comment queue.")
+                    # print(f"Processed a batch of {len(comments_to_process)} comments inside process comment queue.")
 
                 time.sleep(2)  # Process every 2 seconds
 

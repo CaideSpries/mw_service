@@ -88,41 +88,54 @@ class Logger:
         return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
-        # Place the comment in the queue
         self.comment_queue.put((timestamp, comment))
         print(f"Comment queued for timestamp {timestamp}")
 
     def process_comment_queue(self):
         while True:
             try:
-                # Check if there are any comments to process
-                if not self.comment_queue.empty():
-                    timestamp, comment = self.comment_queue.get()
-                    self.update_comment_in_file(timestamp, comment)
+                # Collect all available comments from the queue into a list
+                comments_to_process = []
+                while not self.comment_queue.empty():
+                    comments_to_process.append(self.comment_queue.get())
                     self.comment_queue.task_done()  # Mark this comment as processed
-                time.sleep(2)  # Check the queue every 2 seconds
+
+                if comments_to_process:
+                    self.batch_update_comments_in_file(comments_to_process)
+
+                time.sleep(2)  # Process every 2 seconds
+
             except Exception as e:
                 print(f"Error while processing comments: {e}")
 
-    def update_comment_in_file(self, timestamp, comment):
+    def batch_update_comments_in_file(self, comments):
         try:
             if self.log_file_name:
+                # Read all rows from the CSV file
                 with open(self.log_file_name, mode='r+', newline='') as file:
                     reader = csv.reader(file)
                     rows = list(reader)
-                    file.seek(0)
-                    writer = csv.writer(file)
 
+                    # Create a dictionary for quick lookup of new comments
+                    comment_dict = {timestamp: comment for timestamp, comment in comments}
+
+                    # Update rows with comments
                     for row in rows:
-                        if len(row) > 0 and row[0] == timestamp:
+                        if len(row) > 0 and row[0] in comment_dict:
                             if len(row) < 11:
                                 row.extend([''] * (11 - len(row)))
-                            row[10] = comment  # Add/replace the comment in the correct column
-                        writer.writerow(row)
-                    file.truncate()  # Ensure the file doesn’t contain old data
-                print(f"Comment '{comment}' added to timestamp {timestamp}")
+                            row[10] = comment_dict[row[0]]  # Add/replace the comment
+
+                    # Write back the updated rows to the CSV file
+                    file.seek(0)
+                    writer = csv.writer(file)
+                    writer.writerows(rows)
+                    file.truncate()
+
+                print(f"Batch of {len(comments)} comments processed.")
+
         except Exception as e:
-            print(f"Error updating comment for timestamp {timestamp}: {e}")
+            print(f"Error updating comments in batch: {e}")
 
     def gen_frames(self):
         if not self.cap.isOpened():

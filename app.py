@@ -9,6 +9,7 @@ import time
 import logging
 import heapq
 from threading import Lock
+from datetime import datetime
 
 
 # Define a filter to suppress specific route logs
@@ -96,10 +97,20 @@ class Logger:
         return max(min(average_frame_rate, 30.0), 1.0)  # Ensure frame rate is at least 1.0
 
     def log_comment(self, timestamp, comment):
-        with self.comment_lock:
-            # Use `heapq.heappush` to maintain the priority queue order
-            heapq.heappush(self.comment_queue, (float(timestamp), comment))
-        print(f"Comment queued for timestamp {timestamp}")
+        try:
+            # Convert timestamp string to a datetime object
+            timestamp_dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+            # Convert datetime to Unix time
+            timestamp_epoch = timestamp_dt.timestamp()
+
+            with self.comment_lock:
+                # Use `heapq.heappush` to maintain the priority queue order with the epoch timestamp
+                heapq.heappush(self.comment_queue, (timestamp_epoch, comment))
+
+            print(f"Comment queued for timestamp {timestamp}")
+
+        except ValueError as e:
+            print(f"Error converting timestamp: {e}")
 
     def process_comment_queue(self):
         while True:
@@ -128,7 +139,10 @@ class Logger:
                     rows = list(reader)
 
                     # Create a dictionary for quick lookup of new comments
-                    comment_dict = {str(timestamp): comment for timestamp, comment in comments}
+                    comment_dict = {
+                        datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S'): comment
+                        for timestamp, comment in comments
+                    }
 
                     # Update rows with comments
                     for row in rows:
@@ -143,7 +157,7 @@ class Logger:
                     writer.writerows(rows)
                     file.truncate()
 
-                print(f"Batch of {len(comments)} comments processed inside batch update.")
+                print(f"Batch of {len(comments)} comments processed.")
 
         except Exception as e:
             print(f"Error updating comments in batch: {e}")

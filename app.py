@@ -90,7 +90,7 @@ class Logger:
 
     def log_comment(self, timestamp, comment):
         self.comment_queue.put((timestamp, comment))
-        print(f"Comment queued for timestamp {timestamp}")
+       # print(f"Comment queued for timestamp {timestamp}")
 
     def process_comment_queue(self):
         while True:
@@ -103,6 +103,7 @@ class Logger:
 
                 if comments_to_process:
                     self.batch_update_comments_in_file(comments_to_process)
+                    print(f"Processed a batch of {len(comments_to_process)} comments.")
 
                 time.sleep(2)  # Process every 2 seconds
 
@@ -133,7 +134,7 @@ class Logger:
                     writer.writerows(rows)
                     file.truncate()
 
-                print(f"Batch of {len(comments)} comments processed.")
+                # print(f"Batch of {len(comments)} comments processed.")
 
         except Exception as e:
             print(f"Error updating comments in batch: {e}")

@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added a thread and queue for comment handling" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Added bunch handling of comments">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -505,7 +508,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727284247840</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Added bunch handling of comments">
+      <option name="closed" value="true" />
+      <created>1727332953252</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1727332953252</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -524,12 +535,12 @@
               </RecentGroup>
               <RecentGroup>
                 <option name="FILTER_VALUES">
-                  <option value="origin/main" />
+                  <option value="HEAD" />
                 </option>
               </RecentGroup>
               <RecentGroup>
                 <option name="FILTER_VALUES">
-                  <option value="HEAD" />
+                  <option value="origin/main" />
                 </option>
               </RecentGroup>
             </list>
@@ -560,7 +571,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Revert &quot;Fixed the comment section&quot;&#10;&#10;This reverts commit bb15191a948b550a730133f61be7040cd47ee0b8." />
     <MESSAGE value="Fixed the comment section" />
     <MESSAGE value="Added a check to see if the csv file row is empty" />
     <MESSAGE value="Fixed frame rate and ensured comments are displayed after stop logging" />
@@ -585,6 +595,7 @@
     <MESSAGE value="Added a delay to write frame if logging" />
     <MESSAGE value="Added debugging" />
     <MESSAGE value="Added a thread and queue for comment handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a thread and queue for comment handling" />
+    <MESSAGE value="Added bunch handling of comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added bunch handling of comments" />
   </component>
 </project>

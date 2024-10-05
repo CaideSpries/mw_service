@@ -113,7 +113,7 @@ def log_data(log_file):
             print(f"{timestamp} | {thermistor_info} | Thermocouple: {thermocouple_temp:.2f} °C")
 
             file.flush()
-            time.sleep(10)
+            time.sleep(2) #Change this to change how often the sensors are read
 
 # Start logging
 def start_logging(log_file):

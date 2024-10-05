@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Made log less verbose" />
+    <list default="true" id="1aeede69-4fec-4240-a845-2a5cead55b0b" name="Changes" comment="Made log less verbose">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -120,6 +122,7 @@
       <workItem from="1727088321873" duration="227000" />
       <workItem from="1727092002715" duration="6874000" />
       <workItem from="1727262910074" duration="274000" />
+      <workItem from="1727601926061" duration="508000" />
     </task>
     <task id="LOCAL-00005" summary="Added more columns for 8 thermistors">
       <option name="closed" value="true" />

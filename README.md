@@ -81,7 +81,8 @@ This will open the web interface, where you can:
 - Download recorded video (MP4): Provides a record of the experiment's visual progress for further review.
 
 ### Step 3: Shutdown the server when finished
-You can shutdown and exit the server by pressing ```bash
+You can shutdown and exit the server by pressing 
+```bash
 control + C
 ```
 
